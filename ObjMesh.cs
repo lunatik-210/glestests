@@ -106,6 +106,9 @@ namespace Mono.Samples.GLCube
 
             GL.PopClientAttrib();
             */
+
+            GL.DisableClientState(All.VertexArray);
+            GL.DisableClientState(All.NormalArray);
         }
 
         [StructLayout(LayoutKind.Sequential)]
