@@ -100,7 +100,7 @@ namespace Mono.Samples.GLCube {
 			GL.Hint(All.PerspectiveCorrectionHint, All.Nicest);
 
             //mesh = new ObjMesh(ctx, "sphere/sphere.obj");
-            mesh = new ObjMesh(ctx, "cube.obj");
+            mesh = new ObjMesh(ctx, "sphere/sphere.obj");
 
 			// Run the render loop
 			Run (30);

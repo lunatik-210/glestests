@@ -75,6 +75,9 @@ namespace Mono.Samples.GLCube
         {
             Prepare();
 
+            // put texture binding
+            // like GL.BindTexture(All.Texture2D, textureIds);
+
             GL.BindBuffer(All.ArrayBuffer, verticesBufferId);
             GL.VertexPointer(3, All.Float, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Vertex"));
             GL.EnableClientState(All.VertexArray);
@@ -82,10 +85,17 @@ namespace Mono.Samples.GLCube
             GL.NormalPointer(All.Float, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Normal"));
             GL.EnableClientState(All.NormalArray);
 
+            GL.TexCoordPointer(2, All.Float, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "TexCoord"));
+            GL.EnableClientState(All.TextureCoordArray);
+
             GL.Color4(0.5f, 0.8f, 0.0f, 1.0f);
 
             GL.BindBuffer(All.ElementArrayBuffer, trianglesBufferId);
             GL.DrawElements(All.Triangles, triangles.Length * 3, All.UnsignedShort, IntPtr.Zero);
+
+            GL.DisableClientState(All.VertexArray);
+            GL.DisableClientState(All.NormalArray);
+            GL.DisableClientState(All.TextureCoordArray);
 
             /*
             GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
