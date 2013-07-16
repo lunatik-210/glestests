@@ -38,7 +38,7 @@ namespace Mono.Samples.GLCube
         static List<Vector3> vertices;
         static List<Vector3> normals;
         static List<Vector2> texCoords;
-        static Dictionary<ObjMesh.ObjVertex, int> objVerticesIndexDictionary;
+        static Dictionary<ObjMesh.ObjVertex, short> objVerticesIndexDictionary;
         static List<ObjMesh.ObjVertex> objVertices;
         static List<ObjMesh.ObjTriangle> objTriangles;
         static List<ObjMesh.ObjQuad> objQuads;
@@ -48,7 +48,7 @@ namespace Mono.Samples.GLCube
             vertices = new List<Vector3>();
             normals = new List<Vector3>();
             texCoords = new List<Vector2>();
-            objVerticesIndexDictionary = new Dictionary<ObjMesh.ObjVertex, int>();
+            objVerticesIndexDictionary = new Dictionary<ObjMesh.ObjVertex, short>();
             objVertices = new List<ObjMesh.ObjVertex>();
             objTriangles = new List<ObjMesh.ObjTriangle>();
             objQuads = new List<ObjMesh.ObjQuad>();
@@ -127,7 +127,7 @@ namespace Mono.Samples.GLCube
         }
 
         static char[] faceParamaterSplitter = new char[] { '/' };
-        static int ParseFaceParameter(string faceParameter)
+        static short ParseFaceParameter(string faceParameter)
         {
             Vector3 vertex = new Vector3();
             Vector2 texCoord = new Vector2();
@@ -135,21 +135,21 @@ namespace Mono.Samples.GLCube
 
             string[] parameters = faceParameter.Split(faceParamaterSplitter);
 
-            int vertexIndex = 0;
-            int.TryParse(parameters[0], out vertexIndex);
-            if (vertexIndex < 0) vertexIndex = vertices.Count + vertexIndex;
-            else vertexIndex = vertexIndex - 1;
+            short vertexIndex = 0;
+            short.TryParse(parameters[0], out vertexIndex);
+            if (vertexIndex < 0) vertexIndex = (short)(vertices.Count + vertexIndex);
+            else vertexIndex = (short)(vertexIndex - 1);
             vertex = vertices[vertexIndex];
 
             if (parameters.Length > 1)
             {
-                int texCoordIndex = 0;
-                int.TryParse(parameters[1], out texCoordIndex);
-                if (texCoordIndex < 0) texCoordIndex = texCoords.Count + texCoordIndex;
-                else texCoordIndex = texCoordIndex - 1;
+                short texCoordIndex = 0;
+                short.TryParse(parameters[1], out texCoordIndex);
+                if (texCoordIndex < 0) texCoordIndex = (short)(texCoords.Count + texCoordIndex);
+                else texCoordIndex = (short)(texCoordIndex - 1);
                 texCoord = texCoords[texCoordIndex];
             }
-            
+
             if (parameters.Length > 2)
             {
                 int normalIndex = 0;
@@ -162,14 +162,14 @@ namespace Mono.Samples.GLCube
             return FindOrAddObjVertex(ref vertex, ref texCoord, ref normal);
         }
 
-        static int FindOrAddObjVertex(ref Vector3 vertex, ref Vector2 texCoord, ref Vector3 normal)
+        static short FindOrAddObjVertex(ref Vector3 vertex, ref Vector2 texCoord, ref Vector3 normal)
         {
             ObjMesh.ObjVertex newObjVertex = new ObjMesh.ObjVertex();
             newObjVertex.Vertex = vertex;
             newObjVertex.TexCoord = texCoord;
             newObjVertex.Normal = normal;
 
-            int index;
+            short index;
             if (objVerticesIndexDictionary.TryGetValue(newObjVertex, out index))
             {
                 return index;
@@ -177,8 +177,8 @@ namespace Mono.Samples.GLCube
             else
             {
                 objVertices.Add(newObjVertex);
-                objVerticesIndexDictionary[newObjVertex] = objVertices.Count - 1;
-                return objVertices.Count - 1;
+                objVerticesIndexDictionary[newObjVertex] = (short)(objVertices.Count - 1);
+                return (short)(objVertices.Count - 1);
             }
         }
     }

@@ -75,20 +75,18 @@ namespace Mono.Samples.GLCube
         {
             Prepare();
 
-            GL.EnableClientState(All.VertexArray);
-
             GL.BindBuffer(All.ArrayBuffer, verticesBufferId);
             GL.VertexPointer(3, All.Float, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Vertex"));
+            GL.EnableClientState(All.VertexArray);
 
-            GL.EnableClientState(All.NormalArray);
             GL.NormalPointer(All.Float, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Normal"));
-            
+            GL.EnableClientState(All.NormalArray);
 
             GL.Color4(0.5f, 0.8f, 0.0f, 1.0f);
 
             GL.BindBuffer(All.ElementArrayBuffer, trianglesBufferId);
             GL.DrawElements(All.Triangles, triangles.Length * 3, All.UnsignedShort, IntPtr.Zero);
-            
+
             /*
             GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
             GL.EnableClientState(EnableCap.VertexArray);
@@ -106,9 +104,6 @@ namespace Mono.Samples.GLCube
 
             GL.PopClientAttrib();
             */
-
-            GL.DisableClientState(All.VertexArray);
-            GL.DisableClientState(All.NormalArray);
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -122,18 +117,18 @@ namespace Mono.Samples.GLCube
         [StructLayout(LayoutKind.Sequential)]
         public struct ObjTriangle
         {
-            public int Index0;
-            public int Index1;
-            public int Index2;
+            public short Index0;
+            public short Index1;
+            public short Index2;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct ObjQuad
         {
-            public int Index0;
-            public int Index1;
-            public int Index2;
-            public int Index3;
+            public short Index0;
+            public short Index1;
+            public short Index2;
+            public short Index3;
         }
     }
 }
