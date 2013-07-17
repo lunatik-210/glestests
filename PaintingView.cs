@@ -10,6 +10,7 @@ using OpenTK.Platform.Android;
 using Android.Views;
 using Android.Util;
 using Android.Content;
+using OpenTK.Audio;
 
 namespace Mono.Samples.GLCube {
 
@@ -122,11 +123,11 @@ namespace Mono.Samples.GLCube {
 			
 			if ( viewportWidth > viewportHeight )
 			{
-				GL.Ortho(-2.5f, 2.5f, 2.0f, -2.0f, -4.0f, 4.0f);
+				GL.Ortho(-2.5f, 2.5f, 2.0f, -2.0f, -2.0f, 2.0f);
 			}
 			else
 			{
-				GL.Ortho(-2.0f, 2.0f, -2.5f, 2.5f, -4.0f, 4.0f);
+				GL.Ortho(-2.0f, 2.0f, -2.5f, 2.5f, -2.0f, 2.0f);
 			}
 	
 			GL.MatrixMode (All.Modelview);
@@ -138,7 +139,41 @@ namespace Mono.Samples.GLCube {
 			GL.ClearColor (0, 0, 0, 1.0f);
 			GL.Clear ((uint) All.ColorBufferBit);
 
+            GL.Enable(All.Lighting);
+            //GL.Enable(All.LightModelAmbient);
+            //GL.Enable(All.ColorMaterial);
+            GL.Enable(All.Light0);
+            GL.Enable(All.CullFace);
+            GL.Enable(All.Alpha);
+            GL.Enable(All.Blend);
+            GL.BlendFunc(All.SrcAlpha, All.OneMinusSrcAlpha);
+
+            float [] lightp = {-2.0f, -2.0f, -2.0f};
+            
+            float [] ambientlightArray = { 0.5f, 0.5f, 0.5f, 1 };
+            float [] diffuselightArray = { 0.8f, 0.8f, 0.8f, 1 };
+            float [] specularlightArray = { 0.8f, 0.8f, 0.8f, 1 };
+            
+            float [] ambientmaterial = {0.6f, 0.2f, 0.2f, 1f};
+            float [] diffusematerial = {0.2f, 0.5f, 0.8f, 1f};
+            float [] specularmaterial = {0.2f, 0.5f, 0.9f, 1f};
+
+            GL.Light(All.Light0, All.Position, lightp);
+            GL.Light(All.Light0, All.Ambient, ambientlightArray);
+            GL.Light(All.Light0, All.Diffuse, diffuselightArray);
+            GL.Light(All.Light0, All.Specular, specularlightArray);
+
+            GL.Material(All.FrontAndBack, All.Ambient, ambientmaterial);
+            GL.Material(All.FrontAndBack, All.Diffuse, diffusematerial);
+            GL.Material(All.FrontAndBack, All.Specular, specularmaterial);
+
+            
+
+            //GL.Material(All.FrontAndBack, All.Shininess, 128.0f);
+
             mesh.Render();
+
+            //GL.Disable(All.Lighting);
 
 			SwapBuffers ();
 		}
