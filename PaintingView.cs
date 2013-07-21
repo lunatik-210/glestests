@@ -101,7 +101,7 @@ namespace Mono.Samples.GLCube {
 			GL.Hint(All.PerspectiveCorrectionHint, All.Nicest);
 
             //mesh = new ObjMesh(ctx, "sphere/sphere.obj");
-            mesh = new ObjMesh(ctx, "sphere/sphere.obj");
+            mesh = new ObjMesh(ctx, "cube.obj");
 
 			// Run the render loop
 			Run (30);
@@ -132,9 +132,8 @@ namespace Mono.Samples.GLCube {
 	
 			GL.MatrixMode (All.Modelview);
 			GL.LoadIdentity ();
-			GL.Rotate (rot[0], 1.0f, 0.0f, 0.0f);
-			GL.Rotate (rot[1], 0.0f, 1.0f, 0.0f);
-			GL.Rotate (rot[2], 0.0f, 1.0f, 0.0f);
+
+
 
 			GL.ClearColor (0, 0, 0, 1.0f);
 			GL.Clear ((uint) All.ColorBufferBit);
@@ -169,10 +168,17 @@ namespace Mono.Samples.GLCube {
 
             
 
-            //GL.Material(All.FrontAndBack, All.Shininess, 128.0f);
+            //GL.Material(All.FrontAndBack, All.Shininess, 128.0f);         
+
+            GL.PushMatrix();
+
+            GL.Rotate(rot[0], 1.0f, 0.0f, 0.0f);
+            GL.Rotate(rot[1], 0.0f, 1.0f, 0.0f);
+            GL.Rotate(rot[2], 0.0f, 1.0f, 0.0f);
 
             mesh.Render();
 
+            GL.PopMatrix();
             //GL.Disable(All.Lighting);
 
 			SwapBuffers ();
