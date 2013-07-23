@@ -41,7 +41,7 @@ namespace Mono.Samples.GLTriangle20 {
 
 		void Init ()
 		{
-            rateOfRotationPS = new float[] { 30, 45, 60 };
+            rateOfRotationPS = new float[] { 1, 2, 3 };
             rot = new float[] { 0, 0, 0 };
 		}
 
@@ -100,15 +100,12 @@ namespace Mono.Samples.GLTriangle20 {
                 "uniform mat4 u_modelViewProjectionMatrix;" +
                 "attribute vec3 a_vertex;" +
                 "attribute vec3 a_normal;" +
- //               "attribute vec4 a_color;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
- //               "varying vec4 v_color;" +
                 "void main() {" +
                 "        v_vertex=a_vertex;" +
                 "        vec3 n_normal=normalize(a_normal);" +
                 "        v_normal=n_normal;" +
- //               "        v_color=a_color;" +
                 "        gl_Position = u_modelViewProjectionMatrix * vec4(a_vertex,1.0);" +
                 "}";
 
@@ -118,11 +115,18 @@ namespace Mono.Samples.GLTriangle20 {
                 "uniform vec3 u_camera;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
-//                "varying vec4 v_color;" +
                 "void main() {" +
                 "        vec3 n_normal=normalize(v_normal);" +
-//                "        gl_FragColor = v_color;" +
-                "        gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);" +
+                "        vec3 lightvector = normalize(u_lightPosition - v_vertex);" +
+                "        vec3 lookvector = normalize(u_camera - v_vertex);" +
+                "        float ambient = 0.2;" +
+                "        float k_diffuse = 0.8;" +
+                "        float k_specular = 0.4;" +
+                "        float diffuse = k_diffuse * max(dot(n_normal, lightvector), 0.0);" +
+                "        vec3 reflectvector = reflect(-lightvector, n_normal);" +
+                "        float specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);" +
+                "        vec4 color = vec4(1.0, 0.5, 0.0, 1.0);" +
+                "        gl_FragColor = (ambient+diffuse+specular)*color;" +
                 "}";
 
             int vertexShader = LoadShader(All.VertexShader, vertexShaderCode);
@@ -151,6 +155,10 @@ namespace Mono.Samples.GLTriangle20 {
 				GL.DeleteProgram (program);
 				throw new InvalidOperationException ("Unable to link program");
 			}
+
+            //GL.Enable(All.DepthTest);
+            GL.Enable(All.CullFace);
+            GL.Hint(All.GenerateMipmapHint, All.Nicest);
 
             UpdateFrame += delegate(object sender, FrameEventArgs args)
             {
@@ -203,9 +211,9 @@ namespace Mono.Samples.GLTriangle20 {
 			GL.Viewport(0, 0, viewportWidth, viewportHeight);
 			GL.UseProgram(program);
 
-            Vector3 cameraPos = new Vector3(0.6f, 3.4f, 3.0f);
+            Vector3 cameraPos = new Vector3(0.0f, 0.0f, 3.0f);
             LinkModelViewProjectionMatrix(cameraPos.X, cameraPos.Y, cameraPos.Z);
-            LinkVector3(0.0f, 0.6f, 0.0f, "u_lightPosition");
+            LinkVector3(0.0f, 0.6f, 2.0f, "u_lightPosition");
             LinkVector3(cameraPos.X, cameraPos.Y, cameraPos.Z, "u_camera");
 
             mesh.Render(program);
