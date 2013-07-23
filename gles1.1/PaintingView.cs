@@ -133,8 +133,6 @@ namespace Mono.Samples.GLCube {
 			GL.MatrixMode (All.Modelview);
 			GL.LoadIdentity ();
 
-
-
 			GL.ClearColor (0, 0, 0, 1.0f);
 			GL.Clear ((uint) All.ColorBufferBit);
 

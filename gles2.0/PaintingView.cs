@@ -97,13 +97,16 @@ namespace Mono.Samples.GLTriangle20 {
 			viewportHeight = Height; viewportWidth = Width;
 
 			// Vertex and fragment shaders
-			string vertexShaderSrc =  "attribute vec4 vPosition;    \n" + 
+			string vertexShaderSrc = 
+                              "uniform mat4 u_modelViewProjectionMatrix; \n" +
+                              "attribute vec4 vPosition;    \n" + 
 							  "void main()                  \n" +
 							  "{                            \n" +
-							  "   gl_Position = vPosition;  \n" +
+                              "   gl_Position = u_modelViewProjectionMatrix * vPosition;  \n" +
 							  "}                            \n";
 
-			string fragmentShaderSrc = "precision mediump float;\n" +
+            string fragmentShaderSrc = 
+                                   "precision mediump float;\n" +
 		      					   "void main()                                  \n" +
 		      					   "{                                            \n" +
 		      					   "  gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);  \n" +
@@ -173,6 +176,8 @@ namespace Mono.Samples.GLTriangle20 {
             {
                 RenderTriangle();
             };
+
+            Run(30);
 		}
 
 		int LoadShader (All type, string source)
@@ -205,32 +210,26 @@ namespace Mono.Samples.GLTriangle20 {
 
 		void RenderTriangle ()
 		{
-			vertices = new float [] {
-					0.0f, 0.5f, 0.0f,
-					-0.5f, -0.5f, 0.0f,
-					0.5f, -0.5f, 0.0f
-				};
+    		GL.ClearColor (0.7f, 0.7f, 0.7f, 1);
+			GL.Clear((int)All.ColorBufferBit);
 
-            //float[] modelMatrix = new float[16];
-            //new Quaternion(
-            //Matrix4 mat = Matrix4.Rotate(new Vector3(1.0f, 0.0f, 0.0f), rot[0]);
-            
-
-            //int u_modelViewProjectionMatrix_Handle = GL.GetUniformLocation(program, "u_modelViewProjectionMatrix");
-
-
-            //GL.UniformMatrix4(u_modelViewProjectionMatrix_Handle, 1, false, 
-
-			GL.ClearColor (0.7f, 0.7f, 0.7f, 1);
-			GL.Clear ((int)All.ColorBufferBit);
-
-			GL.Viewport (0, 0, viewportWidth, viewportHeight);
+			GL.Viewport(0, 0, viewportWidth, viewportHeight);
 			GL.UseProgram(program);
 
-			//GL.VertexAttribPointer (0, 3, All.Float, false, 0, vertices);
-			//GL.EnableVertexAttribArray (0);
+            int u_modelViewProjectionMatrix_Handle = GL.GetUniformLocation(program, "u_modelViewProjectionMatrix");
+            Matrix4 mat = Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), rot[0])
+                          * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), rot[1])
+                          * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 0.0f, 1.0f), rot[2]);
 
-			//GL.DrawArrays (All.Triangles, 0, 3);
+            float[] modelMatrix = new float[] {
+                mat.M11, mat.M12, mat.M13, mat.M14,
+                mat.M21, mat.M22, mat.M23, mat.M24,
+                mat.M31, mat.M32, mat.M33, mat.M34,
+                mat.M41, mat.M42, mat.M43, mat.M44
+            };
+
+            GL.UniformMatrix4(u_modelViewProjectionMatrix_Handle, 1, false, modelMatrix);
+
             mesh.Render(program);
 
 			SwapBuffers ();
