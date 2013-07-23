@@ -208,7 +208,7 @@ namespace Mono.Samples.GLTriangle20 {
 			return shader;
 		}
 
-		void RenderTriangle ()
+		void RenderTriangle()
 		{
     		GL.ClearColor (0.7f, 0.7f, 0.7f, 1);
 			GL.Clear((int)All.ColorBufferBit);
@@ -216,24 +216,27 @@ namespace Mono.Samples.GLTriangle20 {
 			GL.Viewport(0, 0, viewportWidth, viewportHeight);
 			GL.UseProgram(program);
 
+            LinkRotationMatrix();
+
+            mesh.Render(program);
+
+			SwapBuffers ();
+		}
+
+        void LinkRotationMatrix()
+        {
             int u_modelViewProjectionMatrix_Handle = GL.GetUniformLocation(program, "u_modelViewProjectionMatrix");
             Matrix4 mat = Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), rot[0])
                           * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), rot[1])
                           * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 0.0f, 1.0f), rot[2]);
-
             float[] modelMatrix = new float[] {
                 mat.M11, mat.M12, mat.M13, mat.M14,
                 mat.M21, mat.M22, mat.M23, mat.M24,
                 mat.M31, mat.M32, mat.M33, mat.M34,
                 mat.M41, mat.M42, mat.M43, mat.M44
             };
-
             GL.UniformMatrix4(u_modelViewProjectionMatrix_Handle, 1, false, modelMatrix);
-
-            mesh.Render(program);
-
-			SwapBuffers ();
-		}
+        }
 
 		// this is called whenever android raises the SurfaceChanged event
 		protected override void OnResize (EventArgs e)
