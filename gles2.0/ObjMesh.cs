@@ -75,11 +75,16 @@ namespace Mono.Samples.GLTriangle20
         {
             Prepare();
 
-            int a_vertex_Handle = GL.GetAttribLocation(program_Handle, "vPosition");
+            int a_vertex_Handle = GL.GetAttribLocation(program_Handle, "a_vertex");
+            int a_normal_Handle = GL.GetAttribLocation(program_Handle, "a_normal");
 
             GL.BindBuffer(All.ArrayBuffer, verticesBufferId);
             GL.VertexAttribPointer(a_vertex_Handle, 3, All.Float, true, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Vertex"));
             GL.EnableVertexAttribArray(a_vertex_Handle);
+
+            GL.BindBuffer(All.ArrayBuffer, verticesBufferId);
+            GL.VertexAttribPointer(a_normal_Handle, 3, All.Float, true, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Normal"));
+            GL.EnableVertexAttribArray(a_normal_Handle);
 
             GL.BindBuffer(All.ElementArrayBuffer, trianglesBufferId);
             GL.DrawElements(All.Triangles, triangles.Length * 3, All.UnsignedShort, IntPtr.Zero);

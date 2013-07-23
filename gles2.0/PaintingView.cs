@@ -96,35 +96,19 @@ namespace Mono.Samples.GLTriangle20 {
 
 			viewportHeight = Height; viewportWidth = Width;
 
-			// Vertex and fragment shaders
-			string vertexShaderSrc = 
-                              "uniform mat4 u_modelViewProjectionMatrix; \n" +
-                              "attribute vec4 vPosition;    \n" + 
-							  "void main()                  \n" +
-							  "{                            \n" +
-                              "   gl_Position = u_modelViewProjectionMatrix * vPosition;  \n" +
-							  "}                            \n";
-
-            string fragmentShaderSrc = 
-                                   "precision mediump float;\n" +
-		      					   "void main()                                  \n" +
-		      					   "{                                            \n" +
-		      					   "  gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);  \n" +
-		      					   "}                                            \n";
-
             string vertexShaderCode =
                 "uniform mat4 u_modelViewProjectionMatrix;" +
                 "attribute vec3 a_vertex;" +
                 "attribute vec3 a_normal;" +
-                "attribute vec4 a_color;" +
+ //               "attribute vec4 a_color;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
-                "varying vec4 v_color;" +
+ //               "varying vec4 v_color;" +
                 "void main() {" +
                 "        v_vertex=a_vertex;" +
                 "        vec3 n_normal=normalize(a_normal);" +
                 "        v_normal=n_normal;" +
-                "        v_color=a_color;" +
+ //               "        v_color=a_color;" +
                 "        gl_Position = u_modelViewProjectionMatrix * vec4(a_vertex,1.0);" +
                 "}";
 
@@ -132,14 +116,15 @@ namespace Mono.Samples.GLTriangle20 {
                 "precision mediump float;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
-                "varying vec4 v_color;" +
+//                "varying vec4 v_color;" +
                 "void main() {" +
                 "        vec3 n_normal=normalize(v_normal);" +
-                "        gl_FragColor = v_color;" +
+//                "        gl_FragColor = v_color;" +
+                "        gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);" +
                 "}";
 
-            int vertexShader = LoadShader(All.VertexShader, vertexShaderSrc);
-            int fragmentShader = LoadShader(All.FragmentShader, fragmentShaderSrc);
+            int vertexShader = LoadShader(All.VertexShader, vertexShaderCode);
+            int fragmentShader = LoadShader(All.FragmentShader, fragmentShaderCode);
 			program = GL.CreateProgram();
 			if (program == 0)
 				throw new InvalidOperationException ("Unable to create program");
