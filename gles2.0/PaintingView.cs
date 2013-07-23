@@ -114,6 +114,8 @@ namespace Mono.Samples.GLTriangle20 {
 
             string fragmentShaderCode =
                 "precision mediump float;" +
+                "uniform vec3 u_lightPosition;" +
+                "uniform vec3 u_camera;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
 //                "varying vec4 v_color;" +
@@ -201,26 +203,51 @@ namespace Mono.Samples.GLTriangle20 {
 			GL.Viewport(0, 0, viewportWidth, viewportHeight);
 			GL.UseProgram(program);
 
-            LinkRotationMatrix();
+            Vector3 cameraPos = new Vector3(0.6f, 3.4f, 3.0f);
+            LinkModelViewProjectionMatrix(cameraPos.X, cameraPos.Y, cameraPos.Z);
+            LinkVector3(0.0f, 0.6f, 0.0f, "u_lightPosition");
+            LinkVector3(cameraPos.X, cameraPos.Y, cameraPos.Z, "u_camera");
 
             mesh.Render(program);
 
 			SwapBuffers ();
 		}
 
-        void LinkRotationMatrix()
+        void LinkModelViewProjectionMatrix(float x, float y, float z)
         {
             int u_modelViewProjectionMatrix_Handle = GL.GetUniformLocation(program, "u_modelViewProjectionMatrix");
-            Matrix4 mat = Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), rot[0])
+
+            Matrix4 view = Matrix4.LookAt(new Vector3(x, y, z), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f));
+
+            float ratio = (float) viewportWidth / viewportHeight;
+            float k=0.055f;
+            float left = -k*ratio;
+            float right = k*ratio;
+            float bottom = -k;
+            float top = k;
+            float near = 0.1f;
+            float far = 10.0f;
+            Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
+
+            Matrix4 model = Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), rot[0])
                           * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), rot[1])
                           * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 0.0f, 1.0f), rot[2]);
-            float[] modelMatrix = new float[] {
+
+            Matrix4 mat = model * view * projection;
+
+            float[] modeViewlProjectionMatrix = new float[] {
                 mat.M11, mat.M12, mat.M13, mat.M14,
                 mat.M21, mat.M22, mat.M23, mat.M24,
                 mat.M31, mat.M32, mat.M33, mat.M34,
                 mat.M41, mat.M42, mat.M43, mat.M44
             };
-            GL.UniformMatrix4(u_modelViewProjectionMatrix_Handle, 1, false, modelMatrix);
+            GL.UniformMatrix4(u_modelViewProjectionMatrix_Handle, 1, false, modeViewlProjectionMatrix);
+        }
+
+        void LinkVector3(float x, float y, float z, string variable)
+        {
+            int handle = GL.GetUniformLocation(program, variable);
+            GL.Uniform3(handle, x, y, z);
         }
 
 		// this is called whenever android raises the SurfaceChanged event
