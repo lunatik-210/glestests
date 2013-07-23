@@ -205,15 +205,15 @@ namespace Mono.Samples.GLTriangle20 {
 
 		void RenderTriangle()
 		{
-    		GL.ClearColor (0.7f, 0.7f, 0.7f, 1);
-			GL.Clear((int)All.ColorBufferBit);
+            GL.ClearColor(0.7f, 0.7f, 0.7f, 1);
+            GL.Clear((int)All.ColorBufferBit);
 
-			GL.Viewport(0, 0, viewportWidth, viewportHeight);
-			GL.UseProgram(program);
+            GL.Viewport(0, 0, viewportWidth, viewportHeight);
+            GL.UseProgram(program);
 
-            Vector3 cameraPos = new Vector3(0.0f, 0.0f, 3.0f);
+            Vector3 cameraPos = new Vector3(0.0f, 0.0f, 6.0f);
             LinkModelViewProjectionMatrix(cameraPos.X, cameraPos.Y, cameraPos.Z);
-            LinkVector3(0.0f, 0.6f, 2.0f, "u_lightPosition");
+            LinkVector3(0.0f, 0.6f, 3.0f, "u_lightPosition");
             LinkVector3(cameraPos.X, cameraPos.Y, cameraPos.Z, "u_camera");
 
             mesh.Render(program);
