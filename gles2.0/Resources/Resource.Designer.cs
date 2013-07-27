@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Mono.Samples.GLTriangle20.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("AndroidUI.Resource", IsApplication=true)]
 
-namespace Mono.Samples.GLTriangle20
+namespace AndroidUI
 {
 	
 	

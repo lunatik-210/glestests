@@ -7,7 +7,7 @@ using Android.Views;
 using Android.Widget;
 using Android.Content.PM;
 
-namespace Mono.Samples.GLTriangle20
+namespace AndroidUI
 {
 	[Activity (Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/app_gltriangle",
 		ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]

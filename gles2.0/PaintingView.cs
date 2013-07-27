@@ -14,9 +14,9 @@ using OpenTK;
 
 // Render a triangle using OpenGLES 2.0
 
-using Mono.Samples.GLTriangle20.Scene;
+using AndroidUI.Scene;
 
-namespace Mono.Samples.GLTriangle20 {
+namespace AndroidUI {
 
 	class PaintingView : AndroidGameView
 	{

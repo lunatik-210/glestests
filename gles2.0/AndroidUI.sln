@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLTriangle20", "GLTriangle20.csproj", "{73A74ADF-6308-42A0-8BA6-2B5D53238546}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidUI", "AndroidUI.csproj", "{73A74ADF-6308-42A0-8BA6-2B5D53238546}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

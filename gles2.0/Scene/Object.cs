@@ -12,9 +12,9 @@ using Android.Widget;
 
 using OpenTK;
 
-using Mono.Samples.GLTriangle20;
+using AndroidUI;
 
-namespace Mono.Samples.GLTriangle20.Scene
+namespace AndroidUI.Scene
 {
     class Object : Node
     {

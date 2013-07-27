@@ -13,7 +13,7 @@ using Android.Widget;
 using OpenTK;
 using OpenTK.Graphics.ES20;
 
-namespace Mono.Samples.GLTriangle20.Scene
+namespace AndroidUI.Scene
 {
     class Scene
     {

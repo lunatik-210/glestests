@@ -13,7 +13,7 @@ using Android.Views;
 using Android.Widget;
 using System.Runtime.InteropServices;
 
-namespace Mono.Samples.GLTriangle20
+namespace AndroidUI
 {
     class ObjMesh
     {

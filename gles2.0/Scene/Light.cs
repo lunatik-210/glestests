@@ -11,7 +11,7 @@ using Android.Views;
 using Android.Widget;
 using OpenTK;
 
-namespace Mono.Samples.GLTriangle20.Scene
+namespace AndroidUI.Scene
 {
     class Light : Node
     {

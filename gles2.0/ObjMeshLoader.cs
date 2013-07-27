@@ -14,7 +14,7 @@ using Android.Widget;
 using Java.IO;
 using System.Globalization;
 
-namespace Mono.Samples.GLTriangle20
+namespace AndroidUI
 {
     class ObjMeshLoader
     {
