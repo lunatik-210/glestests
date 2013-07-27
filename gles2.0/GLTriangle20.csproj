@@ -46,10 +46,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GLTriangle20Activity.cs" />
+    <Compile Include="Scene\Camera.cs" />
+    <Compile Include="Scene\Light.cs" />
+    <Compile Include="Scene\Node.cs" />
     <Compile Include="ObjMesh.cs" />
     <Compile Include="ObjMeshLoader.cs" />
     <Compile Include="PaintingView.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Scene\Object.cs" />
+    <Compile Include="Scene\Scene.cs" />
+    <Compile Include="Scene\Transformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\cube.obj" />
