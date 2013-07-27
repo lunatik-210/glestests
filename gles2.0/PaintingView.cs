@@ -20,7 +20,6 @@ namespace Mono.Samples.GLTriangle20 {
 	{
 		int viewportWidth, viewportHeight;
 		int program;
-		float [] vertices;
         ObjMesh mesh;
 
         float[] rot;
@@ -78,35 +77,26 @@ namespace Mono.Samples.GLTriangle20 {
 			throw new Exception ("Can't load egl, aborting");
 		}
 
-		// This gets called when the drawing surface has been created
-		// There is already a GraphicsContext and Surface at this point,
-		// following the standard OpenTK/GameWindow logic
-		//
-		// Android will only render when it refreshes the surface for
-		// the first time, so if you don't call Run, you need to hook
-		// up the Resize delegate or override the OnResize event to
-		// get the updated bounds and re-call your rendering code.
-		// This will also allow non-Run-loop code to update the screen
-		// when the device is rotated.
 		protected override void OnLoad (EventArgs e)
 		{
-			// This is completely optional and only needed
-			// if you've registered delegates for OnLoad
 			base.OnLoad (e);
 
 			viewportHeight = Height; viewportWidth = Width;
 
             string vertexShaderCode =
-                "uniform mat4 u_modelViewProjectionMatrix;" +
+                "uniform mat4 uModel;" +
+                "uniform mat4 uView;" +
+                "uniform mat4 uProjection;" +
                 "attribute vec3 a_vertex;" +
                 "attribute vec3 a_normal;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
                 "void main() {" +
-                "        v_vertex=a_vertex;" +
+                "        mat4 modelViewProjectionMatrix = uProjection * uView * uModel;" +
+                "        v_vertex=(uModel*vec4(a_vertex,1.0)).xyz;" +
                 "        vec3 n_normal=normalize(a_normal);" +
-                "        v_normal=n_normal;" +
-                "        gl_Position = u_modelViewProjectionMatrix * vec4(a_vertex,1.0);" +
+                "        v_normal=(uModel*vec4(n_normal,1.0)).xyz;" +
+                "        gl_Position = modelViewProjectionMatrix * vec4(a_vertex,1.0);" +
                 "}";
 
             string fragmentShaderCode =
@@ -117,8 +107,8 @@ namespace Mono.Samples.GLTriangle20 {
                 "varying vec3 v_normal;" +
                 "void main() {" +
                 "        vec3 n_normal=normalize(v_normal);" +
-                "        vec3 lightvector = normalize(u_lightPosition - v_vertex);" +
-                "        vec3 lookvector = normalize(u_camera - v_vertex);" +
+                "        vec3 lightvector = normalize( u_lightPosition - v_vertex );" +
+                "        vec3 lookvector = normalize( u_camera - v_vertex );" +
                 "        float ambient = 0.2;" +
                 "        float k_diffuse = 0.8;" +
                 "        float k_specular = 0.4;" +
@@ -158,6 +148,7 @@ namespace Mono.Samples.GLTriangle20 {
 
             //GL.Enable(All.DepthTest);
             GL.Enable(All.CullFace);
+            GL.CullFace(All.Back);
             GL.Hint(All.GenerateMipmapHint, All.Nicest);
 
             UpdateFrame += delegate(object sender, FrameEventArgs args)
@@ -211,9 +202,9 @@ namespace Mono.Samples.GLTriangle20 {
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
             GL.UseProgram(program);
 
-            Vector3 cameraPos = new Vector3(0.0f, 0.0f, 6.0f);
+            Vector3 cameraPos = new Vector3(0.0f, 0.0f, 10.0f);
             LinkModelViewProjectionMatrix(cameraPos.X, cameraPos.Y, cameraPos.Z);
-            LinkVector3(0.0f, 0.6f, 3.0f, "u_lightPosition");
+            LinkVector3(3.0f, 5.0f, 3.0f, "u_lightPosition");
             LinkVector3(cameraPos.X, cameraPos.Y, cameraPos.Z, "u_camera");
 
             mesh.Render(program);
@@ -223,33 +214,43 @@ namespace Mono.Samples.GLTriangle20 {
 
         void LinkModelViewProjectionMatrix(float x, float y, float z)
         {
-            int u_modelViewProjectionMatrix_Handle = GL.GetUniformLocation(program, "u_modelViewProjectionMatrix");
+            Matrix4 translation = Matrix4.CreateTranslation(0.0f, 0.0f, 0.0f);
+            Matrix4 rotation = Matrix4.CreateRotationX(rot[0]) * Matrix4.CreateRotationY(rot[1]) * Matrix4.CreateRotationZ(rot[2]); 
+            
+            Matrix4 scaling = Matrix4.Scale(2.0f);
 
-            Matrix4 view = Matrix4.LookAt(new Vector3(x, y, z), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f));
+            Matrix4 model = scaling * rotation * translation;
+
+            Matrix4 view = Matrix4.LookAt(new Vector3(x, y, z), Vector3.Zero, Vector3.UnitY);
 
             float ratio = (float) viewportWidth / viewportHeight;
-            float k=0.055f;
-            float left = -k*ratio;
+            float k=0.065f;
+            float left =-k*ratio;
             float right = k*ratio;
             float bottom = -k;
             float top = k;
             float near = 0.1f;
-            float far = 10.0f;
+            float far = 100.0f;
+
             Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
 
-            Matrix4 model = Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), rot[0])
-                          * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), rot[1])
-                          * Matrix4.CreateFromAxisAngle(new Vector3(0.0f, 0.0f, 1.0f), rot[2]);
+            int u_ModelMatrix_Handle = GL.GetUniformLocation(program, "uModel");
+            int u_ViewMatrix_Handle = GL.GetUniformLocation(program, "uView");
+            int u_ProjectionMatrix_Handle = GL.GetUniformLocation(program, "uProjection");
 
-            Matrix4 mat = model * view * projection;
+            GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false, Matrix4toArray16(model));
+            GL.UniformMatrix4(u_ViewMatrix_Handle, 1, false, Matrix4toArray16(view));
+            GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Matrix4toArray16(projection));
+        }
 
-            float[] modeViewlProjectionMatrix = new float[] {
+        float[] Matrix4toArray16(Matrix4 mat)
+        {
+            return new float[] {
                 mat.M11, mat.M12, mat.M13, mat.M14,
                 mat.M21, mat.M22, mat.M23, mat.M24,
                 mat.M31, mat.M32, mat.M33, mat.M34,
                 mat.M41, mat.M42, mat.M43, mat.M44
             };
-            GL.UniformMatrix4(u_modelViewProjectionMatrix_Handle, 1, false, modeViewlProjectionMatrix);
         }
 
         void LinkVector3(float x, float y, float z, string variable)
@@ -258,14 +259,11 @@ namespace Mono.Samples.GLTriangle20 {
             GL.Uniform3(handle, x, y, z);
         }
 
-		// this is called whenever android raises the SurfaceChanged event
 		protected override void OnResize (EventArgs e)
 		{
 			viewportHeight = Height;
 			viewportWidth = Width;
 
-			// the surface change event makes your context
-			// not be current, so be sure to make it current again
 			MakeCurrent ();
 			RenderTriangle ();
 		}
