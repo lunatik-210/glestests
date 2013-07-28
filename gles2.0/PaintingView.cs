@@ -229,7 +229,7 @@ namespace AndroidUI {
 
 		void RenderTriangle()
 		{
-            GL.ClearColor(0.7f, 0.7f, 0.7f, 1);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
             GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
 
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
