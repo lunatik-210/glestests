@@ -23,6 +23,9 @@ namespace AndroidUI.Scene
         private int width;
         private int height;
 
+        private float angle = 0.0f;
+        private float angle_inc = 0.005f;
+
         public Scene() 
         {
             lights = new List<Light>();
@@ -49,6 +52,11 @@ namespace AndroidUI.Scene
                GL.Uniform3(handle, lights[i].Pos.X, lights[i].Pos.Y, lights[i].Pos.Z);
             }
             
+        }
+
+        public void Update()
+        {
+            angle += angle_inc;
         }
 
         private float[] Matrix4toArray16(Matrix4 mat)
@@ -78,10 +86,13 @@ namespace AndroidUI.Scene
             int u_ModelMatrix_Handle = GL.GetUniformLocation(shader, "uModel");
             int u_NormalMatrix_Handle = GL.GetUniformLocation(shader, "uNormal");
 
+            Transformation t = new Transformation();
+            t.RotationVector = new Vector3(angle, angle, angle);
+
             foreach (Object obj in objects)
             {
-                GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false, Matrix4toArray16(obj.Transform.transformation));
-                GL.UniformMatrix4(u_NormalMatrix_Handle, 1, false, Matrix4toArray16(Matrix4.Transpose(obj.Transform.transformation)));
+                GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false, Matrix4toArray16(obj.Transform.transformation * t.transformation ));
+                GL.UniformMatrix4(u_NormalMatrix_Handle, 1, false, Matrix4toArray16(Matrix4.Transpose(Matrix4.Invert(obj.Transform.transformation * t.transformation))));
                 obj.Mesh.Render(shader);
             }
         }

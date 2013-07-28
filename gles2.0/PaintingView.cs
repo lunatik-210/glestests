@@ -51,78 +51,26 @@ namespace AndroidUI {
             scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f)));
             scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
             scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
-            
-            Scene.Object obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(0.0f, 0.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
 
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(3.0f, 0.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
+            float d = 2.0f;
 
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
+            for (int i = -1; i <2; ++i)
             {
-                TranslateVector = new Vector3(-3.0f, 0.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
-
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(0.0f, 3.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
-
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(3.0f, 3.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
-
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(-3.0f, 3.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
-
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(0.0f, -3.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
-
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(3.0f, -3.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
-
-            obj = new Scene.Object();
-            obj.Transform = new Transformation()
-            {
-                TranslateVector = new Vector3(-3.0f, -3.0f, 0.0f)
-            };
-            obj.Mesh = mesh;
-            scene.appendObject(obj);
+                for (int j = -1; j <2; ++j)
+                {
+                    for (int k = -1; k <2; ++k)
+                    {
+                        Scene.Object obj = new Scene.Object();
+                        obj.Transform = new Transformation()
+                        {
+                            TranslateVector = new Vector3(d*i, d*j, d*k),
+                            ScaleFactor = 0.8f
+                        };
+                        obj.Mesh = mesh;
+                        scene.appendObject(obj);
+                    }
+                }                
+            }
 
 		}
 
@@ -232,15 +180,11 @@ namespace AndroidUI {
 				throw new InvalidOperationException ("Unable to link program");
 			}
 
-            //GL.Enable(All.DepthTest);
-            GL.Enable(All.CullFace);
-            GL.CullFace(All.Back);
-            GL.Hint(All.GenerateMipmapHint, All.Nicest);
-
             UpdateFrame += delegate(object sender, FrameEventArgs args)
             {
                 for (int i = 0; i < 3; i++)
                     rot[i] += (float)(rateOfRotationPS[i] * args.Time);
+                scene.Update();
             };
 
             RenderFrame += delegate
@@ -286,10 +230,15 @@ namespace AndroidUI {
 		void RenderTriangle()
 		{
             GL.ClearColor(0.7f, 0.7f, 0.7f, 1);
-            GL.Clear((int)All.ColorBufferBit);
+            GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
 
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
             GL.UseProgram(program);
+
+            GL.Enable(All.DepthTest);
+            GL.Enable(All.CullFace);
+            GL.CullFace(All.Back);
+            GL.Hint(All.GenerateMipmapHint, All.Nicest);
 
             scene.render(program);
 
