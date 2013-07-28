@@ -48,11 +48,13 @@ namespace AndroidUI {
 
             scene = new Scene.Scene();
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
+            scene.appendLight(new Scene.Light(new Vector3(-3.0f, -5.0f, 3.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(-3.0f, 5.0f, 3.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
             scene.appendLight(new Scene.Light(new Vector3(3.0f, 5.0f, 3.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
             Scene.Object obj = new Scene.Object();
             obj.Transform = new Transformation()
             {
-                TranslateVector = new Vector3(1.0f, 0.0f, 0.0f)
+                TranslateVector = new Vector3(0.0f, 0.0f, 0.0f)
             };
             obj.Mesh = mesh;
             scene.appendObject(obj);
@@ -105,22 +107,36 @@ namespace AndroidUI {
 
             string fragmentShaderCode =
                 "precision mediump float;" +
-                "uniform vec3 u_lightPosition;" +
-                "uniform vec4 u_lightColor;" +
+                "const int MAX_LIGHTS = 8;" +
+                "struct Light " +
+                "{" +
+                "    vec3 position;" +
+                "    vec4 color;" +
+                "};" +
+                "uniform Light u_lights[MAX_LIGHTS];" +
                 "uniform vec3 u_camera;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
                 "void main() {" +
                 "        vec3 n_normal=normalize(v_normal);" +
-                "        vec3 lightvector = normalize( u_lightPosition - v_vertex );" +
+                "        vec3 lightvector;" +
                 "        vec3 lookvector = normalize( u_camera - v_vertex );" +
                 "        float ambient = 0.2;" +
                 "        float k_diffuse = 0.8;" +
                 "        float k_specular = 0.4;" +
-                "        float diffuse = k_diffuse * max(dot(n_normal, lightvector), 0.0);" +
-                "        vec3 reflectvector = reflect(-lightvector, n_normal);" +
-                "        float specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);" +
-                "        gl_FragColor = (ambient+diffuse+specular)*u_lightColor;" +
+                "        vec4 final_color = vec4(0.0, 0.0, 0.0, 0.0);" +
+                "        float diffuse;" +
+                "        vec3 reflectvector;" +
+                "        float specular;" +
+                "        for(int i=0; i<MAX_LIGHTS; i++) {" +
+                "            lightvector = normalize( u_lights[i].position - v_vertex );" +
+                "            diffuse = k_diffuse * max(dot(n_normal, lightvector), 0.0);" +
+                "            reflectvector = reflect(-lightvector, n_normal);" +
+                "            specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);" +
+                "            final_color += (ambient+diffuse+specular)*u_lights[i].color;" +
+                "        }" +
+
+                "        gl_FragColor = final_color;" +
                 "}";
 
             int vertexShader = LoadShader(All.VertexShader, vertexShaderCode);

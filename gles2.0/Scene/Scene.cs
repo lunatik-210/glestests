@@ -35,17 +35,20 @@ namespace AndroidUI.Scene
 
             GL.UseProgram(shader);
 
-            int u_ViewMatrix_Handle = GL.GetUniformLocation(shader, "uView");
-            GL.UniformMatrix4(u_ViewMatrix_Handle, 1, false, Matrix4toArray16(view));
-
-            int handle = GL.GetUniformLocation(shader, "u_lightPosition");
-            GL.Uniform3(handle, lights[0].Pos.X, lights[0].Pos.Y, lights[0].Pos.Z);
-
-            handle = GL.GetUniformLocation(shader, "u_lightColor");
-            GL.Uniform4(handle, lights[0].Color.X, lights[0].Color.Y, lights[0].Color.Z, lights[0].Color.W);
+            int handle = GL.GetUniformLocation(shader, "uView");
+            GL.UniformMatrix4(handle, 1, false, Matrix4toArray16(view));
 
             handle = GL.GetUniformLocation(shader, "u_camera");
             GL.Uniform3(handle, camera.Pos.X, camera.Pos.Y, camera.Pos.Z);
+
+            for (int i = 0; i < lights.Count; i++)
+            {
+               handle = GL.GetUniformLocation(shader, "u_lights[" + i + "].color");
+               GL.Uniform4(handle, lights[i].Color.X, lights[i].Color.Y, lights[i].Color.Z, lights[i].Color.W);
+               handle = GL.GetUniformLocation(shader, "u_lights[" + i + "].position");
+               GL.Uniform3(handle, lights[i].Pos.X, lights[i].Pos.Y, lights[i].Pos.Z);
+            }
+            
         }
 
         private float[] Matrix4toArray16(Matrix4 mat)
