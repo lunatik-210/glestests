@@ -138,7 +138,7 @@ namespace AndroidUI {
                 "        vec3 lookvector = normalize( u_camera - v_vertex );" +
                 "        float ambient = 0.2;" +
                 "        float k_diffuse = 0.8;" +
-                "        float k_specular = 0.4;" +
+                "        float k_specular = 0.8;" +
                 "        vec4 final_color = vec4(0.0, 0.0, 0.0, 0.0);" +
                 "        float diffuse;" +
                 "        vec3 reflectvector;" +
@@ -184,12 +184,11 @@ namespace AndroidUI {
             {
                 for (int i = 0; i < 3; i++)
                     rot[i] += (float)(rateOfRotationPS[i] * args.Time);
-                scene.Update();
             };
 
             RenderFrame += delegate
             {
-                RenderTriangle();
+                Render();
             };
             GL.UseProgram(program);
             scene.Width = viewportWidth;
@@ -227,7 +226,34 @@ namespace AndroidUI {
 			return shader;
 		}
 
-		void RenderTriangle()
+        float prevx;
+        float prevy;
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            base.OnTouchEvent(e);
+            if (e.Action == MotionEventActions.Down)
+            {
+                prevx = e.GetX();
+                prevy = e.GetY();
+            }
+            if (e.Action == MotionEventActions.Move)
+            {
+                float e_x = e.GetX();
+                float e_y = e.GetY();
+
+                float xdiff = (prevx - e_x);
+                float ydiff = (prevy - e_y);
+                scene.Update(xdiff, ydiff);
+                prevx = e_x;
+                prevy = e_y;
+            }
+            if (e.Action == MotionEventActions.Down || e.Action == MotionEventActions.Move)
+                Render();
+            return true;
+        }
+
+		void Render()
 		{
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
             GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
@@ -242,7 +268,7 @@ namespace AndroidUI {
 
             scene.render(program);
 
-			SwapBuffers ();
+			SwapBuffers();
 		}
 
 
@@ -255,7 +281,7 @@ namespace AndroidUI {
             scene.Height = viewportHeight;
 
 			MakeCurrent ();
-			RenderTriangle ();
+			Render();
 		}
 	}
 }

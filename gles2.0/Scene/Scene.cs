@@ -23,7 +23,8 @@ namespace AndroidUI.Scene
         private int width;
         private int height;
 
-        private float angle = 0.0f;
+        private float xangle = 0.0f;
+        private float yangle = 0.0f;
         private float angle_inc = 0.005f;
 
         public Scene() 
@@ -54,9 +55,10 @@ namespace AndroidUI.Scene
             
         }
 
-        public void Update()
+        public void Update(float xdiff, float ydiff)
         {
-            angle += angle_inc;
+            xangle += xdiff;
+            yangle += ydiff;
         }
 
         private float[] Matrix4toArray16(Matrix4 mat)
@@ -87,7 +89,7 @@ namespace AndroidUI.Scene
             int u_NormalMatrix_Handle = GL.GetUniformLocation(shader, "uNormal");
 
             Transformation t = new Transformation();
-            t.RotationVector = new Vector3(angle, angle, angle);
+            t.RotationVector = new Vector3(-yangle * 0.005f, -xangle * 0.005f, 0);
 
             foreach (Object obj in objects)
             {
