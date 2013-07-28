@@ -76,10 +76,12 @@ namespace AndroidUI.Scene
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Matrix4toArray16(projection));
 
             int u_ModelMatrix_Handle = GL.GetUniformLocation(shader, "uModel");
+            int u_NormalMatrix_Handle = GL.GetUniformLocation(shader, "uNormal");
 
             foreach (Object obj in objects)
             {
                 GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false, Matrix4toArray16(obj.Transform.transformation));
+                GL.UniformMatrix4(u_NormalMatrix_Handle, 1, false, Matrix4toArray16(Matrix4.Transpose(obj.Transform.transformation)));
                 obj.Mesh.Render(shader);
             }
         }

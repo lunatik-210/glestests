@@ -49,10 +49,10 @@ namespace AndroidUI {
             scene = new Scene.Scene();
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
             scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f)));
-            scene.appendLight(new Scene.Light(new Vector3(4.0f, 4.0f, 3.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
-            scene.appendLight(new Scene.Light(new Vector3(-3.0f, -3.0f, 2.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
+            
             Scene.Object obj = new Scene.Object();
-
             obj.Transform = new Transformation()
             {
                 TranslateVector = new Vector3(0.0f, 0.0f, 0.0f)
@@ -159,16 +159,17 @@ namespace AndroidUI {
                 "uniform mat4 uModel;" +
                 "uniform mat4 uView;" +
                 "uniform mat4 uProjection;" +
+                "uniform mat4 uNormal;" +
                 "attribute vec3 a_vertex;" +
                 "attribute vec3 a_normal;" +
                 "varying vec3 v_vertex;" +
                 "varying vec3 v_normal;" +
                 "void main() {" +
-                "        mat4 modelViewProjectionMatrix = uProjection * uView * uModel;" +
-                "        v_vertex=(uModel*vec4(a_vertex,1.0)).xyz;" +
+                "        vec4 vertex = uModel * vec4(a_vertex, 1.0);" +
+                "        v_vertex=vertex.xyz;" +
                 "        vec3 n_normal=normalize(a_normal);" +
-                "        v_normal=(uModel*vec4(n_normal,1.0)).xyz;" +
-                "        gl_Position = modelViewProjectionMatrix * vec4(a_vertex,1.0);" +
+                "        v_normal=(uNormal*vec4(n_normal,1.0)).xyz;" +
+                "        gl_Position = uProjection * uView * vertex;" +
                 "}";
 
             string fragmentShaderCode =
@@ -201,7 +202,6 @@ namespace AndroidUI {
                 "            specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);" +
                 "            final_color += (ambient+diffuse+specular)*u_lights[i].color;" +
                 "        }" +
-
                 "        gl_FragColor = final_color;" +
                 "}";
 
