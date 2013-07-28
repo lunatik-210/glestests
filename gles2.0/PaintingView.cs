@@ -48,16 +48,82 @@ namespace AndroidUI {
 
             scene = new Scene.Scene();
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
-            scene.appendLight(new Scene.Light(new Vector3(-3.0f, -5.0f, 3.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f)));
-            scene.appendLight(new Scene.Light(new Vector3(-3.0f, 5.0f, 3.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
-            scene.appendLight(new Scene.Light(new Vector3(3.0f, 5.0f, 3.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(4.0f, 4.0f, 3.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(-3.0f, -3.0f, 2.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
             Scene.Object obj = new Scene.Object();
+
             obj.Transform = new Transformation()
             {
                 TranslateVector = new Vector3(0.0f, 0.0f, 0.0f)
             };
             obj.Mesh = mesh;
             scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(3.0f, 0.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(-3.0f, 0.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(0.0f, 3.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(3.0f, 3.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(-3.0f, 3.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(0.0f, -3.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(3.0f, -3.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
+            obj = new Scene.Object();
+            obj.Transform = new Transformation()
+            {
+                TranslateVector = new Vector3(-3.0f, -3.0f, 0.0f)
+            };
+            obj.Mesh = mesh;
+            scene.appendObject(obj);
+
 		}
 
 		protected override void CreateFrameBuffer ()

@@ -76,8 +76,12 @@ namespace AndroidUI.Scene
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Matrix4toArray16(projection));
 
             int u_ModelMatrix_Handle = GL.GetUniformLocation(shader, "uModel");
-            GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false, Matrix4toArray16(objects[0].Transform.transformation));
-            objects[0].Mesh.Render(shader);
+
+            foreach (Object obj in objects)
+            {
+                GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false, Matrix4toArray16(obj.Transform.transformation));
+                obj.Mesh.Render(shader);
+            }
         }
 
         public void appendLight( Light light )
