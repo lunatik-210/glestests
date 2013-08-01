@@ -55,6 +55,13 @@ namespace AndroidUI.Scene
             set { rotationVector = value; UpdateTransformationMatrix(); }
         }
 
+        public Vector3 Transform(Vector3 pos)
+        {
+            return new Vector3(transformation.M11 * pos.X + transformation.M12 * pos.Y + transformation.M13 * pos.Z,
+                transformation.M21 * pos.X + transformation.M22 * pos.Y + transformation.M23 * pos.Z,
+                transformation.M31 * pos.X + transformation.M32 * pos.Y + transformation.M33 * pos.Z);
+        }
+
         private void UpdateTransformationMatrix()
         {
             Matrix4 translation = Matrix4.CreateTranslation(translateVector);

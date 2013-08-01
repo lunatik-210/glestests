@@ -58,12 +58,15 @@
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Scene\Object.cs" />
     <Compile Include="Scene\Scene.cs" />
+    <Compile Include="Tools.cs" />
     <Compile Include="Scene\Transformation.cs" />
+    <Compile Include="Shader.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\cube.obj" />
     <AndroidAsset Include="Assets\sphere.mtl" />
     <AndroidAsset Include="Assets\sphere.obj" />
+    <AndroidAsset Include="Assets\triad_sphere.obj" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>

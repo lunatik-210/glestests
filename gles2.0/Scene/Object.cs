@@ -13,27 +13,31 @@ using Android.Widget;
 using OpenTK;
 
 using AndroidUI;
+using OpenTK.Graphics.ES20;
 
 namespace AndroidUI.Scene
 {
-    class Object : Node
+    class Object
     {
         private ObjMesh mesh = null;
+        private Transformation position = null;
 
         public Object()
-            : base()
         {
-        }
-
-        public Object(Vector3 pos)
-            : base(pos)
-        {
+            mesh = null;
+            position = null;
         }
 
         public ObjMesh Mesh
         {
             get { return mesh; }
             set { mesh = value; }
+        }
+
+        public Transformation Position
+        {
+            get { return position; }
+            set { position = value; }
         }
     }
 }

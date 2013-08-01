@@ -47,7 +47,7 @@ namespace AndroidUI
         int trianglesBufferId;
         int quadsBufferId;
 
-        public void Prepare()
+        private void Prepare()
         {
             if (verticesBufferId == 0)
             {
@@ -71,12 +71,12 @@ namespace AndroidUI
             }
         }
 
-        public void Render(int program_Handle )
+        public void Render(Shader shader)
         {
             Prepare();
 
-            int a_vertex_Handle = GL.GetAttribLocation(program_Handle, "a_vertex");
-            int a_normal_Handle = GL.GetAttribLocation(program_Handle, "a_normal");
+            int a_vertex_Handle = GL.GetAttribLocation(shader.Program, "a_vertex");
+            int a_normal_Handle = GL.GetAttribLocation(shader.Program, "a_normal");
 
             GL.BindBuffer(All.ArrayBuffer, verticesBufferId);
             GL.VertexAttribPointer(a_vertex_Handle, 3, All.Float, true, Marshal.SizeOf(typeof(ObjVertex)), Marshal.OffsetOf(typeof(ObjVertex), "Vertex"));
@@ -88,7 +88,6 @@ namespace AndroidUI
 
             GL.BindBuffer(All.ElementArrayBuffer, trianglesBufferId);
             GL.DrawElements(All.Triangles, triangles.Length * 3, All.UnsignedShort, IntPtr.Zero);
-
         }
 
         [StructLayout(LayoutKind.Sequential)]

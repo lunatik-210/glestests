@@ -16,12 +16,10 @@ namespace AndroidUI.Scene
     class Node
     {
         protected Vector3 pos;
-        protected Transformation transform;
 
         public Node()
         {
             Pos = Vector3.Zero;
-            Transform = null;
         }
 
         public Node(Vector3 pos)
@@ -33,12 +31,6 @@ namespace AndroidUI.Scene
         {
             get { return pos; }
             set { pos = value; }
-        }
-
-        public virtual Transformation Transform
-        {
-            get { return transform; }
-            set { transform = value; }
         }
     }
 }
