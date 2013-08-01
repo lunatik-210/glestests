@@ -46,7 +46,48 @@ namespace AndroidUI {
             "        v_normal=(uNormal*vec4(n_normal,1.0)).xyz;" +
             "        gl_Position = uProjection * uView * vertex;" +
             "}";
-
+        /*
+                private string fragmentShaderCode =
+                    "precision mediump float;" +
+                    "const int MAX_LIGHTS = 8;" +
+                    "struct Light " +
+                    "{" +
+                    "    vec3 position;" +
+                    "    vec4 color;" +
+                    "    vec3 attenuation;" +
+                    "};" +
+                    "uniform Light u_lights[MAX_LIGHTS];" +
+                    "uniform int numLights;" +
+                    "uniform vec3 u_camera;" +
+                    "varying vec3 v_vertex;" +
+                    "varying vec3 v_normal;" +
+                    "void main() {" +
+                    "        vec3 n_normal=normalize(v_normal);" +
+                    "        vec3 lightvector;" +
+                    "        vec3 lookvector = normalize(u_camera - v_vertex);" +
+                    "        vec3 dirvector = u_lights[i].position - v_vertex;" +
+                    "        float ambient = 0.2;" +
+                    "        float k_diffuse = 0.8;" +
+                    "        float k_specular = 0.8;" +
+                    "        vec4 final_color = vec4(0.0, 0.0, 0.0, 0.0);" +
+                    "        float diffuse;" +
+                    "        vec3 reflectvector;" +
+                    "        float specular;" +
+                    "        float attenuation;" +
+        //            "        float distance = length(dirvector);" + 
+                    "        for(int i=0; i<MAX_LIGHTS; i++) {" +
+                    "            if( i >= numLights )" +
+                    "                break;" +
+                    "            attenuation = 1.0 / (u_lights[i].attenuation[0] + u_lights[i].attenuation[1]*distance + u_lights[i].attenuation[2]*distance*distance); " +
+                    "            lightvector = normalize(dirvector);" +
+                    "            diffuse = k_diffuse * max(dot(n_normal, lightvector), 0.0);" +
+                    "            reflectvector = reflect(-lightvector, n_normal);" +
+                    "            specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);" +
+                    "            final_color += (ambient+diffuse+specular)*u_lights[i].color;" +
+                    "        }" +
+                    "        gl_FragColor = final_color;" +
+                    "}";
+         */
         private string fragmentShaderCode =
             "precision mediump float;" +
             "const int MAX_LIGHTS = 8;" +
@@ -54,6 +95,7 @@ namespace AndroidUI {
             "{" +
             "    vec3 position;" +
             "    vec4 color;" +
+            "    vec3 attenuation;"+
             "};" +
             "uniform Light u_lights[MAX_LIGHTS];" +
             "uniform int numLights;" +
@@ -62,8 +104,9 @@ namespace AndroidUI {
             "varying vec3 v_normal;" +
             "void main() {" +
             "        vec3 n_normal=normalize(v_normal);" +
+            "        vec3 lookvector = normalize(u_camera - v_vertex);" +
             "        vec3 lightvector;" +
-            "        vec3 lookvector = normalize( u_camera - v_vertex );" +
+            "        vec3 dirvector; " +
             "        float ambient = 0.2;" +
             "        float k_diffuse = 0.8;" +
             "        float k_specular = 0.8;" +
@@ -71,14 +114,19 @@ namespace AndroidUI {
             "        float diffuse;" +
             "        vec3 reflectvector;" +
             "        float specular;" +
+            "        float distance; " +
+            "        float attenuation;" +
             "        for(int i=0; i<MAX_LIGHTS; i++) {" +
             "            if( i >= numLights )" +
             "                break;" +
-            "            lightvector = normalize( u_lights[i].position - v_vertex );" +
+            "            dirvector = u_lights[i].position - v_vertex;" +
+            "            distance = length(dirvector);" +
+            "            lightvector = normalize(dirvector);" +
+            "            attenuation = 1.0 / (u_lights[i].attenuation[0] + u_lights[i].attenuation[1]*distance + u_lights[i].attenuation[2]*distance*distance); " +
             "            diffuse = k_diffuse * max(dot(n_normal, lightvector), 0.0);" +
             "            reflectvector = reflect(-lightvector, n_normal);" +
             "            specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);" +
-            "            final_color += (ambient+diffuse+specular)*u_lights[i].color;" +
+            "            final_color += (ambient+diffuse+specular)*attenuation*u_lights[i].color;" +
             "        }" +
             "        gl_FragColor = final_color;" +
             "}";
@@ -135,9 +183,9 @@ namespace AndroidUI {
 
             scene = new Scene.Scene(shader);
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
-            scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f)));
-            scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)));
-            scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f)));
+            scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f), new Vector3(0.5f, 0.0f, 0.02f)));
+            scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f), new Vector3(0.5f, 0.0f, 0.02f)));
+            scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f), new Vector3(0.5f, 0.0f, 0.02f)));
 
             float d = 2.0f;
 

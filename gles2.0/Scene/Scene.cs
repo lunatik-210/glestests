@@ -138,6 +138,9 @@ namespace AndroidUI.Scene
                 
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].position");
                 GL.Uniform3(handle, lights[i].Pos.X, lights[i].Pos.Y, lights[i].Pos.Z);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].attenuation");
+                GL.Uniform3(handle, lights[i].Attenuation.X, lights[i].Attenuation.Y, lights[i].Attenuation.Z);
             }
         }
 
