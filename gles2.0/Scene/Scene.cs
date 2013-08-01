@@ -36,6 +36,11 @@ namespace AndroidUI.Scene
 
         public void init()
         {
+            GL.Enable(All.DepthTest);
+            GL.Enable(All.CullFace);
+            GL.CullFace(All.Back);
+            GL.Hint(All.GenerateMipmapHint, All.Nicest);
+
             shader.Use();
 
             ScaleCamera(1.0f);

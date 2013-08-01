@@ -213,12 +213,6 @@ namespace AndroidUI {
             GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
 
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
-            shader.Use();
-
-            GL.Enable(All.DepthTest);
-            GL.Enable(All.CullFace);
-            GL.CullFace(All.Back);
-            GL.Hint(All.GenerateMipmapHint, All.Nicest);
 
             scene.render();
 
