@@ -18,6 +18,7 @@
     <AndroidSupportedAbis>armeabi%3barmeabi-v7a%3bx86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -61,14 +62,15 @@
     <Compile Include="Tools.cs" />
     <Compile Include="Scene\Transformation.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="Tools\FileTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\cube.obj" />
     <AndroidAsset Include="Assets\sphere.mtl" />
     <AndroidAsset Include="Assets\sphere.obj" />
     <AndroidAsset Include="Assets\triad_sphere.obj" />
-    <AndroidAsset Include="Assets\Shaders\sh.vs" />
-    <AndroidAsset Include="Assets\Shaders\sh.fs" />
+    <AndroidAsset Include="Assets\Shaders\vs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\fs.glsl" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>
