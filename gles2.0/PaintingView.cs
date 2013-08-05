@@ -15,7 +15,7 @@ using OpenTK;
 // Render a triangle using OpenGLES 2.0
 
 using AndroidUI.Scene;
-using System.IO;
+using Skweez.Filetools;
 
 namespace AndroidUI {
 
@@ -82,19 +82,16 @@ namespace AndroidUI {
 
             // try catch is needed here (see ObjMeshLoader.Load(Context,filename))
             // Tools is greate place for such a function like load text i think
-            using (var input = Context.Assets.Open("Shaders/sh.vs"))
-            using (StreamReader streamReader = new StreamReader(input))
-            {
-                vertexShaderCode = streamReader.ReadToEnd();
-                streamReader.Close();
+
+            try {
+                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/fs.glsl"));
+                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/vs.glsl"));
+            }
+            catch(Exception ex) {
+                throw new Exception("Can't load shaders from file: {0}", ex);
             }
 
-            using (var input = Context.Assets.Open("Shaders/sh.fs"))
-            using (StreamReader streamReader = new StreamReader(input))
-            {
-                fragmentShaderCode = streamReader.ReadToEnd();
-                streamReader.Close();
-            }
+
             //////////////////////////////////////////////////////////////////////
 
             shader = new Shader(vertexShaderCode, fragmentShaderCode);
