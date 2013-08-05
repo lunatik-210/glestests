@@ -29,20 +29,21 @@ void main() {
     for(int i=0; i<MAX_LIGHTS; i++) {
         if( i >= numLights )
             break;
-
+        
+        // additional parameters
         dirvector = u_lights[i].position - v_vertex;
-
         distance = length(dirvector);
         lightvector = normalize(dirvector);
 
-        attenuation = 1.0 / (u_lights[i].attenuation[0] + u_lights[i].attenuation[1]*distance + u_lights[i].attenuation[2]*distance*distance);
-
+        // calc diffuse lighting
         diffuse = k_diffuse * max(dot(n_normal, lightvector), 0.0);
 
+        // calc specular lighting
         reflectvector = reflect(-lightvector, n_normal);
-
         specular = k_specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);
 
+        // calc attenuation for the light
+        attenuation = 1.0 / (u_lights[i].attenuation[0] + u_lights[i].attenuation[1]*distance + u_lights[i].attenuation[2]*distance*distance);
         final_color += (ambient+diffuse+specular)*attenuation*u_lights[i].color;
     }
     gl_FragColor = final_color;
