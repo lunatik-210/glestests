@@ -69,8 +69,12 @@
     <AndroidAsset Include="Assets\sphere.mtl" />
     <AndroidAsset Include="Assets\sphere.obj" />
     <AndroidAsset Include="Assets\triad_sphere.obj" />
-    <AndroidAsset Include="Assets\Shaders\vs.glsl" />
-    <AndroidAsset Include="Assets\Shaders\fs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\vs.glsl">
+      <SubType>Designer</SubType>
+    </AndroidAsset>
+    <AndroidAsset Include="Assets\Shaders\fs.glsl">
+      <SubType>Designer</SubType>
+    </AndroidAsset>
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>

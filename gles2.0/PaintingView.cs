@@ -80,12 +80,9 @@ namespace AndroidUI {
             string vertexShaderCode = null;
             string fragmentShaderCode = null;
 
-            // try catch is needed here (see ObjMeshLoader.Load(Context,filename))
-            // Tools is greate place for such a function like load text i think
-
             try {
-                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/fs.glsl"));
-                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/vs.glsl"));
+                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/vs.glsl"));
+                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/fs.glsl"));
             }
             catch(Exception ex) {
                 throw new Exception("Can't load shaders from file: {0}", ex);
