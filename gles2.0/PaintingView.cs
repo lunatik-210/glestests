@@ -103,9 +103,10 @@ namespace AndroidUI {
 
             scene = new Scene.Scene(shader);
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
-            scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f), new Vector3(0.5f, 0.0f, 0.02f)));
-            scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f), new Vector3(0.5f, 0.0f, 0.02f)));
-            scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f), new Vector3(0.5f, 0.0f, 0.02f)));
+            Vector3 lightAtt = new Vector3(1.0f, 0.00f, 0.02f);
+            scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f), lightAtt));
+            scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f), lightAtt));
+            scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f), lightAtt));
 
             float d = 2.0f;
 
