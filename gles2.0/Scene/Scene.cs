@@ -18,7 +18,7 @@ namespace AndroidUI.Scene
     class Scene
     {
         private Camera camera = null;
-        private List<Light> lights = null;
+        private List<SpotLight> lights = null;
         private List<Object> objects = null;
 
         private float xangle = 0.0f;
@@ -28,7 +28,7 @@ namespace AndroidUI.Scene
 
         public Scene(Shader shader) 
         {
-            lights = new List<Light>();
+            lights = new List<SpotLight>();
             objects = new List<Object>();
             this.shader = shader;
             globalTransform = new Transformation();
@@ -108,7 +108,7 @@ namespace AndroidUI.Scene
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
         }
 
-        public void appendLight( Light light )
+        public void appendLight( SpotLight light )
         {
             lights.Add(light);
         }
@@ -134,15 +134,32 @@ namespace AndroidUI.Scene
             for (int i = 0; i < lights.Count; i++)
             {
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].color");
-                GL.Uniform4(handle, lights[i].Color.X, lights[i].Color.Y, lights[i].Color.Z, lights[i].Color.W);
+                GL.Uniform4(handle, lights[i].color.X, lights[i].color.Y, lights[i].color.Z, lights[i].color.W);
                 
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].position");
-                GL.Uniform3(handle, lights[i].Pos.X, lights[i].Pos.Y, lights[i].Pos.Z);
+                GL.Uniform3(handle, lights[i].pos.X, lights[i].pos.Y, lights[i].pos.Z);
 
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].attenuation");
-                GL.Uniform3(handle, lights[i].Attenuation.X, lights[i].Attenuation.Y, lights[i].Attenuation.Z);
+                GL.Uniform3(handle, lights[i].attenuation.X, lights[i].attenuation.Y, lights[i].attenuation.Z);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].direction");
+                GL.Uniform3(handle, lights[i].direction.X, lights[i].direction.Y, lights[i].direction.Z);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].exponent");
+                GL.Uniform1(handle, lights[i].exp);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].cosCutoff");
+                GL.Uniform1(handle, lights[i].cosCutOff);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].ambient");
+                GL.Uniform1(handle, lights[i].ambient);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].diffuse");
+                GL.Uniform1(handle, lights[i].diffuse);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].specular");
+                GL.Uniform1(handle, lights[i].specular);
             }
         }
-
     }
 }

@@ -81,8 +81,8 @@ namespace AndroidUI {
             string fragmentShaderCode = null;
 
             try {
-                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/vs.glsl"));
-                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/fs.glsl"));
+                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Point/vs.glsl"));
+                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Point/fs.glsl"));
             }
             catch(Exception ex) {
                 throw new Exception("Can't load shaders from file: {0}", ex);
@@ -98,9 +98,27 @@ namespace AndroidUI {
             scene = new Scene.Scene(shader);
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
             Vector3 lightAtt = new Vector3(1.0f, 0.00f, 0.02f);
-            scene.appendLight(new Scene.Light(new Vector3(-5.0f, 5.0f, 4.0f), new Vector4(0.0f, 0.5f, 1.0f, 1.0f), lightAtt));
-            scene.appendLight(new Scene.Light(new Vector3(5.0f, 5.0f, 4.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f), lightAtt));
-            scene.appendLight(new Scene.Light(new Vector3(-5.0f, -5.0f, 4.0f), new Vector4(1.0f, 0.5f, 0.0f, 1.0f), lightAtt));
+
+            SpotLight light = new SpotLight();
+            Objects.InitSpotLight(ref light);
+            light.direction = new Vector3(1.0f, 1.0f, 1.0f);
+            light.color = new Vector4(0.0f, 0.5f, 1.0f, 1.0f);
+            light.attenuation = lightAtt;
+            scene.appendLight(light);
+
+            light = new SpotLight();
+            Objects.InitSpotLight(ref light);
+            light.direction = new Vector3(-1.0f, 1.0f, 1.0f);
+            light.color = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            light.attenuation = lightAtt;
+            scene.appendLight(light);
+
+            light = new SpotLight();
+            Objects.InitSpotLight(ref light);
+            light.direction = new Vector3(0.0f, 1.0f, 1.0f);
+            light.color = new Vector4(1.0f, 0.5f, 0.0f, 1.0f);
+            light.attenuation = lightAtt;
+            scene.appendLight(light);
 
             float d = 2.0f;
 

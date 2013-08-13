@@ -18,7 +18,9 @@
     <AndroidSupportedAbis>armeabi%3barmeabi-v7a%3bx86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
-    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.2</TargetFrameworkVersion>
+    <JavaMaximumHeapSize />
+    <JavaOptions />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -58,6 +60,7 @@
     <Compile Include="PaintingView.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Scene\Object.cs" />
+    <Compile Include="Scene\Objects.cs" />
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Scene\Transformation.cs" />
@@ -69,12 +72,10 @@
     <AndroidAsset Include="Assets\sphere.mtl" />
     <AndroidAsset Include="Assets\sphere.obj" />
     <AndroidAsset Include="Assets\triad_sphere.obj" />
-    <AndroidAsset Include="Assets\Shaders\vs.glsl">
-      <SubType>Designer</SubType>
-    </AndroidAsset>
-    <AndroidAsset Include="Assets\Shaders\fs.glsl">
-      <SubType>Designer</SubType>
-    </AndroidAsset>
+    <AndroidAsset Include="Assets\Shaders\Point\fs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\Point\vs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\Spot\fs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\Spot\vs.glsl" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>
