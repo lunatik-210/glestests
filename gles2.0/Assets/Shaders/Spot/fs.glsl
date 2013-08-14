@@ -23,12 +23,35 @@ uniform vec3 u_camera;
 varying vec3 v_vertex;
 varying vec3 v_normal;
 
+float calcAttenuation(float distance, vec3 lightvector, Light light)
+{
+    float spotEffect = dot(normalize(light.direction), -lightvector);
+    float spot       = float(spotEffect > light.cosCutoff);
+    spotEffect = max(pow(spotEffect, light.exponent), 0.0);
+    return (spotEffect * spot) / (light.attenuation[0] + light.attenuation[1]*distance + light.attenuation[2]*distance*distance);
+}
+
+float calcPhong(vec3 lookvector, vec3 dirvector, vec3 n_normal, Light light)
+{
+    vec3 lightvector  = normalize(dirvector);
+    float distance    = length(dirvector);
+    
+    // calc diffuse lighting
+    float diffuse = light.diffuse * max(dot(n_normal, lightvector), 0.0);
+
+    // calc specular lighting
+    vec3 reflectvector = reflect(-lightvector, n_normal);
+    float specular = light.specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);
+    
+    return (light.ambient+diffuse+specular);
+}
+
 void main() {
     float diffuse, specular, distance, attenuation;
     vec3 lightvector, dirvector, reflectvector;
-    float spotEffect, spot;
+    float phong;
 
-    vec3 n_normal=normalize(v_normal);
+    vec3 n_normal = normalize(v_normal);
     vec3 lookvector = normalize(u_camera - v_vertex);
     vec4 final_color = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -40,21 +63,12 @@ void main() {
         dirvector    = u_lights[i].position - v_vertex;
         distance     = length(dirvector);
         lightvector  = normalize(dirvector);
-        
-        spotEffect = dot(normalize(u_lights[i].direction), -lightvector);
-        spot       = float(spotEffect > u_lights[i].cosCutoff);
-        spotEffect = max(pow(spotEffect, u_lights[i].exponent), 0.0);
 
-        // calc diffuse lighting
-        diffuse = u_lights[i].diffuse * max(dot(n_normal, lightvector), 0.0);
-
-        // calc specular lighting
-        reflectvector = reflect(-lightvector, n_normal);
-        specular = u_lights[i].specular * pow(max(dot(lookvector, reflectvector), 0.0), 40.0);
+        phong = calcPhong(lookvector, dirvector, n_normal, u_lights[i]);
 
         // calc attenuation for the light
-        attenuation = (spotEffect * spot) / (u_lights[i].attenuation[0] + u_lights[i].attenuation[1]*distance + u_lights[i].attenuation[2]*distance*distance);
-        final_color += (u_lights[i].ambient+diffuse+specular)*attenuation*u_lights[i].color;
+        attenuation = calcAttenuation(distance, lightvector, u_lights[i]);
+        final_color += phong*attenuation*u_lights[i].color;
     }
     gl_FragColor = final_color;
 }

@@ -120,6 +120,14 @@ namespace AndroidUI {
             light.attenuation = lightAtt;
             scene.appendLight(light);
 
+            light = new SpotLight();
+            Objects.InitSpotLight(ref light);
+            light.direction = new Vector3(0.0f, 0.0f, -1.0f);
+            light.color = new Vector4(0.3f, 0.5f, 0.6f, 1.0f);
+            light.pos = new Vector3(0.0f, 0.0f, 4.0f);
+            light.attenuation = lightAtt;
+            scene.appendLight(light);
+
             float d = 2.0f;
 
             for (int i = -1; i < 2; ++i)
