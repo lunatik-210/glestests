@@ -81,8 +81,8 @@ namespace AndroidUI {
             string fragmentShaderCode = null;
 
             try {
-                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Point/vs.glsl"));
-                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Point/fs.glsl"));
+                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Spot/vs.glsl"));
+                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Spot/fs.glsl"));
             }
             catch(Exception ex) {
                 throw new Exception("Can't load shaders from file: {0}", ex);
