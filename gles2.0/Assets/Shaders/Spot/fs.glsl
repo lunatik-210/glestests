@@ -23,10 +23,14 @@ uniform vec3 u_camera;
 varying vec3 v_vertex;
 varying vec3 v_normal;
 
-float calcAttenuation(float distance, vec3 lightvector, Light light)
+float calcAttenuation(vec3 dirvector, Light light)
 {
-    float spotEffect = dot(normalize(light.direction), -lightvector);
-    float spot       = float(spotEffect > light.cosCutoff);
+    float distance    = length(dirvector);
+    vec3  lightvector = normalize(dirvector);
+    
+    float spotEffect  = dot(normalize(light.direction), -lightvector);
+    float spot        = float(spotEffect > light.cosCutoff);
+    
     spotEffect = max(pow(spotEffect, light.exponent), 0.0);
     return (spotEffect * spot) / (light.attenuation[0] + light.attenuation[1]*distance + light.attenuation[2]*distance*distance);
 }
@@ -46,10 +50,14 @@ float calcPhong(vec3 lookvector, vec3 dirvector, vec3 n_normal, Light light)
     return (light.ambient+diffuse+specular);
 }
 
+float calcCookTorrance()
+{
+    return 0.0;
+}
+
 void main() {
-    float diffuse, specular, distance, attenuation;
-    vec3 lightvector, dirvector, reflectvector;
-    float phong;
+    float attenuation, phong;
+    vec3 dirvector;
 
     vec3 n_normal = normalize(v_normal);
     vec3 lookvector = normalize(u_camera - v_vertex);
@@ -59,15 +67,12 @@ void main() {
         if( i >= numLights )
             break;
          
-        // additional parameters
-        dirvector    = u_lights[i].position - v_vertex;
-        distance     = length(dirvector);
-        lightvector  = normalize(dirvector);
+        dirvector = u_lights[i].position - v_vertex;
 
         phong = calcPhong(lookvector, dirvector, n_normal, u_lights[i]);
 
         // calc attenuation for the light
-        attenuation = calcAttenuation(distance, lightvector, u_lights[i]);
+        attenuation = calcAttenuation(dirvector, u_lights[i]);
         final_color += phong*attenuation*u_lights[i].color;
     }
     gl_FragColor = final_color;
