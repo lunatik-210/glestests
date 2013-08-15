@@ -57,15 +57,6 @@ namespace AndroidUI.Scene
             UpdateCamera();
         }
 
-        private void UpdateCamera()
-        {
-            int handle = GL.GetUniformLocation(shader.Program, "uView");
-            GL.UniformMatrix4(handle, 1, false, Tools.Matrix4toArray16(camera.View));
-            
-            handle = GL.GetUniformLocation(shader.Program, "u_camera");
-            GL.Uniform3(handle, camera.Pos.X, camera.Pos.Y, camera.Pos.Z);
-        }
-
         public void UpdateSceneOrientation(float xdiff, float ydiff)
         {
             xangle += xdiff;
@@ -124,6 +115,11 @@ namespace AndroidUI.Scene
             get { return camera; }
         }
 
+        public void onTapEvent(float x, float y)
+        {
+          
+        }
+
         private void InitLights(Shader shader)
         {
             int handle = -1;
@@ -160,6 +156,15 @@ namespace AndroidUI.Scene
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].specular");
                 GL.Uniform1(handle, lights[i].specular);
             }
+        }
+
+        private void UpdateCamera()
+        {
+            int handle = GL.GetUniformLocation(shader.Program, "uView");
+            GL.UniformMatrix4(handle, 1, false, Tools.Matrix4toArray16(camera.View));
+
+            handle = GL.GetUniformLocation(shader.Program, "u_camera");
+            GL.Uniform3(handle, camera.Pos.X, camera.Pos.Y, camera.Pos.Z);
         }
     }
 }
