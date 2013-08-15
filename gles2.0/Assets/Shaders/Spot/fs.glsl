@@ -77,10 +77,6 @@ float calcCookTorrance(float roughness, float lightIntencity, vec3 dirvector, ve
     // calc cook torrance coefficient
     float k = (f * d * g) / (nv * nl);
     
-    // calc specular lighting
-    // vec3 reflectvector = reflect(-lightvector, n_normal);
-    // float specular = light.specular * ( k + pow(max(dot(lookvector, reflectvector), 0.0), 40.0) );
-    
     return (light.ambient + nl * ( light.diffuse + light.specular * k ) );
 }
 
@@ -99,7 +95,7 @@ void main() {
         dirvector = u_lights[i].position - v_vertex;
 
         //k = calcPhong(dirvector, lookvector, n_normal, u_lights[i]);
-        k = calcCookTorrance(0.3, 0.8, dirvector, lookvector, n_normal, u_lights[i]);
+        k = calcCookTorrance(0.035, 0.2, dirvector, lookvector, n_normal, u_lights[i]);
 
         // calc attenuation for the light
         attenuation = calcAttenuation(dirvector, u_lights[i]);
