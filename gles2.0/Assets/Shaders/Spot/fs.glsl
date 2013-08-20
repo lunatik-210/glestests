@@ -53,8 +53,6 @@ float calcPhong(vec3 dirvector, vec3 lookvector, vec3 n_normal, Light light)
 
 float calcCookTorrance(float roughness, vec3 dirvector, vec3 lookvector, vec3 n_normal, Light light)
 {
-    float e = 2.7182818284;
-
     vec3 lightvector = normalize(dirvector); 
     vec3 half_vec    = normalize(lookvector + lightvector);
     
