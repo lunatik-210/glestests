@@ -50,7 +50,7 @@ float calcPhong(vec3 dirvector, vec3 lookvector, vec3 n_normal, Light light)
     return (light.ambient+diffuse+specular);
 }
 
-float calcCookTorrance(float roughness, float lightIntencity, vec3 dirvector, vec3 lookvector, vec3 n_normal, Light light)
+float calcCookTorrance(float roughness, vec3 dirvector, vec3 lookvector, vec3 n_normal, Light light)
 {
     float e = 2.7182818284;
 
@@ -64,18 +64,19 @@ float calcCookTorrance(float roughness, float lightIntencity, vec3 dirvector, ve
     
     // calc geometric coefficient
     float gk = 2.0*nh/vh;
-    float g = min(1.0, min(gk*nv,gk*nl));
+    float g = min(1.0, gk*min(nv,nl));
     
     // calc roughness coefficient
     float r2 = roughness * roughness;
     float nh2 = nh * nh;
-    float d = pow(e, (nh2-1.0) / (r2 * nh2)) / (4.0 * r2 * nh2 * nh2);
+    float nh2r = 1.0 / (nh2 * r2);
+    float d = exp((nh2 - 1.0) * ( nh2r )) * nh2r / (4.0 * nh2 );
     
     // calc Fresnel coefficient
-    float f = mix(pow(1.0 - nv, 5.0), 1.0, lightIntencity);
+    float f =  1.0 / (1.0 + nv); 
     
     // calc cook torrance coefficient
-    float k = (f * d * g) / (nv * nl);
+    float k = (f * d * g) / (nv * nl + 1.0e-7);
     
     return (light.ambient + nl * ( light.diffuse + light.specular * k ) );
 }
@@ -95,11 +96,12 @@ void main() {
         dirvector = u_lights[i].position - v_vertex;
 
         //k = calcPhong(dirvector, lookvector, n_normal, u_lights[i]);
-        k = calcCookTorrance(0.035, 0.2, dirvector, lookvector, n_normal, u_lights[i]);
+        k = calcCookTorrance(0.1, dirvector, lookvector, n_normal, u_lights[i]);
 
         // calc attenuation for the light
         attenuation = calcAttenuation(dirvector, u_lights[i]);
         final_color += k*attenuation*u_lights[i].color;
     }
     gl_FragColor = final_color;
+    gl_FragColor.a *= 0.5;
 }
