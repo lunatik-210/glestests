@@ -22,6 +22,7 @@ uniform vec3 u_camera;
 
 varying vec3 v_vertex;
 varying vec3 v_normal;
+varying vec3 v_look;
 
 float calcAttenuation(vec3 dirvector, Light light)
 {
@@ -86,7 +87,7 @@ void main() {
     vec3 dirvector;
 
     vec3 n_normal = normalize(v_normal);
-    vec3 lookvector = normalize(u_camera - v_vertex);
+    vec3 lookvector = normalize(v_look);
     vec4 final_color = vec4(0.0, 0.0, 0.0, 0.0);
 
     for(int i=0; i<MAX_LIGHTS; i++) {
@@ -103,5 +104,4 @@ void main() {
         final_color += k*attenuation*u_lights[i].color;
     }
     gl_FragColor = final_color;
-    gl_FragColor.a *= 0.5;
 }
