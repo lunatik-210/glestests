@@ -103,25 +103,26 @@ namespace AndroidUI {
 
             light = new SpotLight();
             Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(1.0f, 1.0f, 1.0f);
+            light.direction = new Vector3(1.0f, 0.0f, 0.0f);
             light.color = new Vector4(0.0f, 0.5f, 1.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
 
             light = new SpotLight();
             Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(-1.0f, 1.0f, 1.0f);
+            light.direction = new Vector3(-1.0f, 0.0f, 0.0f);
             light.color = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
 
             light = new SpotLight();
             Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(0.0f, 1.0f, 1.0f);
+            light.direction = new Vector3(0.0f, 0.0f, 1.0f);
             light.color = new Vector4(1.0f, 0.5f, 0.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
-
+            
+            /*
             light = new SpotLight();
             Objects.InitSpotLight(ref light);
             light.direction = new Vector3(0.0f, -1.0f, 1.0f);
@@ -135,7 +136,7 @@ namespace AndroidUI {
             light.color = new Vector4(0.2f, 0.8f, 0.1f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
-
+            */
             /*
             light = new SpotLight();
             Objects.InitSpotLight(ref light);

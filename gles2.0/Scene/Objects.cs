@@ -14,11 +14,11 @@ namespace AndroidUI.Scene
             light.direction = new Vector3(0.0f, 0.0f, 0.0f);
 
             light.ambient = 0.4f;
-            light.diffuse = 0.6f;
+            light.diffuse = 0.8f;
             light.specular = 0.8f;
 
-            light.exp = 4.5f;
-            light.cosCutOff = (float)(Math.Cos(55.0 * Math.PI / 180.0));
+            light.exp = 2.5f;
+            light.cosCutOff = (float)(Math.Cos(45.0 * Math.PI / 180.0));
         }
     }
 
