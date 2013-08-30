@@ -110,6 +110,7 @@ namespace AndroidUI.Scene
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
         }
 
+        /*
         private Matrix4 OrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float tx = - (right + left) / (right - left),
@@ -122,6 +123,7 @@ namespace AndroidUI.Scene
                       0, 0, 0, 1);
         }
 
+        
         private int texture;
 
         private int TextureCreateDepth(int width, int height)
@@ -144,6 +146,7 @@ namespace AndroidUI.Scene
             GL.TexImage2D(All.Texture2D, 0, (int)(All.DepthComponent), width, height, 0, All.DepthComponent, All.Float, IntPtr.Zero);
             return texture;
         }
+        */
 
         public void appendLight( Light light )
         {
