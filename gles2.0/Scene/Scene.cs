@@ -18,7 +18,7 @@ namespace AndroidUI.Scene
     class Scene
     {
         private Camera camera = null;
-        private List<SpotLight> lights = null;
+        private List<Light> lights = null;
         private List<Object> objects = null;
 
         private float xangle = 0.0f;
@@ -28,7 +28,7 @@ namespace AndroidUI.Scene
 
         public Scene(Shader shader) 
         {
-            lights = new List<SpotLight>();
+            lights = new List<Light>();
             objects = new List<Object>();
             this.shader = shader;
             globalTransform = new Transformation();
@@ -104,11 +104,48 @@ namespace AndroidUI.Scene
             float far = 100.0f;
 
             Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
+            //Matrix4 projection = OrthoProjection(left, right, bottom, top, near, far);
+            
             int u_ProjectionMatrix_Handle = GL.GetUniformLocation(shader.Program, "uProjection");
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
         }
 
-        public void appendLight( SpotLight light )
+        private Matrix4 OrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+        {
+            float tx = - (right + left) / (right - left),
+                    ty = - (top + bottom) / (top - bottom),
+                    tz = - (zFar + zNear) / (zFar - zNear);
+
+            return new Matrix4(2 / (right - left), 0, 0, tx,
+                      0, 2 / (top - bottom), 0, ty,
+                      0, 0, -2 / (zFar - zNear), tz,
+                      0, 0, 0, 1);
+        }
+
+        private int texture;
+
+        private int TextureCreateDepth(int width, int height)
+        {
+            GL.GenTextures(1, ref texture);
+
+            GL.BindTexture(All.Texture2D, texture);
+
+            GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)(All.Linear));
+            GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)(All.Linear));
+
+            GL.TexParameter(All.Texture2D, All.TextureWrapS, (int)(All.ClampToEdge));
+            GL.TexParameter(All.Texture2D, All.TextureWrapT, (int)(All.ClampToEdge));
+
+
+            // необходимо для использования depth-текстуры как shadow map
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+            // соаздем "пустую" текстуру под depth-данные
+            GL.TexImage2D(All.Texture2D, 0, (int)(All.DepthComponent), width, height, 0, All.DepthComponent, All.Float, IntPtr.Zero);
+            return texture;
+        }
+
+        public void appendLight( Light light )
         {
             lights.Add(light);
         }
@@ -159,6 +196,9 @@ namespace AndroidUI.Scene
 
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].specular");
                 GL.Uniform1(handle, lights[i].specular);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].type");
+                GL.Uniform1(handle, (int)(lights[i].type));
             }
         }
     }

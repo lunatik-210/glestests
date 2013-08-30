@@ -13,6 +13,7 @@ struct Light
     float specular;
     float exponent;
     float cosCutoff;
+    int type;
 };
 
 uniform Light u_lights[MAX_LIGHTS];
@@ -24,7 +25,7 @@ varying vec3 v_vertex;
 varying vec3 v_normal;
 varying vec3 v_look;
 
-float calcAttenuation(vec3 dirvector, Light light)
+float calcSpotAttenuation(vec3 dirvector, Light light)
 {
     float distance    = length(dirvector);
     vec3  lightvector = normalize(dirvector);
@@ -34,6 +35,12 @@ float calcAttenuation(vec3 dirvector, Light light)
     
     spotEffect = max(pow(spotEffect, light.exponent), 0.0);
     return (spotEffect * spot) / (light.attenuation[0] + light.attenuation[1]*distance + light.attenuation[2]*distance*distance);
+}
+
+float calcPointAttenuation(vec3 dirvector, Light light)
+{
+    float distance = length(dirvector);
+    return 1.0 / (light.attenuation[0] + light.attenuation[1]*distance + light.attenuation[2]*distance*distance);
 }
 
 float calcPhong(vec3 dirvector, vec3 lookvector, vec3 n_normal, Light light)
@@ -91,15 +98,23 @@ void main() {
     for(int i=0; i<MAX_LIGHTS; i++) {
         if( i >= numLights )
             break;
-         
+            
         dirvector = u_lights[i].position - v_vertex;
-
-        //k = calcPhong(dirvector, lookvector, n_normal, u_lights[i]);
-        k = calcCookTorrance(0.1, dirvector, lookvector, n_normal, u_lights[i]);
-
-        // calc attenuation for the light
-        attenuation = calcAttenuation(dirvector, u_lights[i]);
-        final_color += k*attenuation*u_lights[i].color;
+        
+        if( u_lights[i].type == 1 )
+        {
+            attenuation = calcPointAttenuation(dirvector, u_lights[i]);
+            k = calcCookTorrance(0.5, dirvector, lookvector, n_normal, u_lights[i]);
+        }
+            
+        if( u_lights[i].type == 2 )
+        {
+            attenuation = calcSpotAttenuation(dirvector, u_lights[i]);
+            k = calcCookTorrance(0.2, dirvector, lookvector, n_normal, u_lights[i]);
+            //k = calcPhong(dirvector, lookvector, n_normal, u_lights[i]);
+        }
+        
+        final_color += (k*attenuation)*u_lights[i].color;
     }
     gl_FragColor = final_color;
 }
