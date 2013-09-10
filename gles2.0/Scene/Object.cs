@@ -21,6 +21,7 @@ namespace AndroidUI.Scene
     {
         private ObjMesh mesh = null;
         private Transformation position = null;
+        private int id = 3;
 
         public Object()
         {
@@ -38,6 +39,12 @@ namespace AndroidUI.Scene
         {
             get { return position; }
             set { position = value; }
+        }
+
+        public void Render(Shader shader)
+        {
+            GL.Uniform1(GL.GetUniformLocation(shader.Program, "uObjectIndex"), 0.5f);
+            Mesh.Render(shader);
         }
     }
 }

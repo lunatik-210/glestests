@@ -1,0 +1,2 @@
+AndroidUI.GLTriangle20Activity;androidui.GLTriangle20Activity
+AndroidUI.PaintingView;androidui.PaintingView
