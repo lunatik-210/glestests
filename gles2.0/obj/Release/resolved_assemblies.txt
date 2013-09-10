@@ -1,8 +1,0 @@
-D:\work\repo\glestests\gles2.0\bin\Release\AndroidUI.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v2.2\Mono.Android.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0\mscorlib.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0\System.Xml.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0\System.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0\Mono.Security.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0\System.Core.dll
-C:\Program Files\Reference Assemblies\Microsoft\Framework\MonoAndroid\v2.2\OpenTK.dll
