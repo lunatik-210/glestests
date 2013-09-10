@@ -16,6 +16,7 @@ using OpenTK;
 
 using AndroidUI.Scene;
 using Skweez.Filetools;
+using Android.Widget;
 
 namespace AndroidUI {
     class PaintingView : AndroidGameView, ScaleGestureDetector.IOnScaleGestureListener
@@ -23,7 +24,7 @@ namespace AndroidUI {
         private int viewportWidth, viewportHeight;
 
         private Scene.Scene scene;
-        private Shader shader;
+        private Shader [] shaders;
 
         float prevx;
         float prevy;
@@ -75,51 +76,57 @@ namespace AndroidUI {
 
 			viewportHeight = Height; viewportWidth = Width;
 
+            shaders = new Shader[2];
+
             string vertexShaderCode = null;
             string fragmentShaderCode = null;
 
             try {
                 vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Spot/vs.glsl"));
                 fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Spot/fs.glsl"));
+                shaders[0] = new Shader(vertexShaderCode, fragmentShaderCode);
+
+                vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Depth/vs.glsl"));
+                fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Depth/fs.glsl"));
+                shaders[1] = new Shader(vertexShaderCode, fragmentShaderCode);
             }
             catch(Exception ex) {
                 throw new Exception("Can't load shaders from file: {0}", ex);
             }
 
-
             //////////////////////////////////////////////////////////////////////
-
-            shader = new Shader(vertexShaderCode, fragmentShaderCode);
 
             ObjMesh sphere = new ObjMesh(Context, "triad_sphere.obj");
 
-            scene = new Scene.Scene(shader);
+            scene = new Scene.Scene(shaders[0]);
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
             Vector3 lightAtt = new Vector3(1.0f, 0.00f, 0.02f);
             
-            SpotLight light;
-
-            light = new SpotLight();
+            Light light;
+            
+            light = new Light();
             Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(1.0f, 1.0f, 1.0f);
+            light.direction = new Vector3(1.0f, 0.0f, 0.0f);
             light.color = new Vector4(0.0f, 0.5f, 1.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
 
-            light = new SpotLight();
+            light = new Light();
             Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(-1.0f, 1.0f, 1.0f);
+            light.direction = new Vector3(-1.0f, 0.0f, 0.0f);
             light.color = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
 
-            light = new SpotLight();
+            light = new Light();
             Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(0.0f, 1.0f, 1.0f);
+            light.direction = new Vector3(0.0f, 0.0f, 1.0f);
             light.color = new Vector4(1.0f, 0.5f, 0.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
-
+            
+            
+            /*
             light = new SpotLight();
             Objects.InitSpotLight(ref light);
             light.direction = new Vector3(0.0f, -1.0f, 1.0f);
@@ -133,7 +140,7 @@ namespace AndroidUI {
             light.color = new Vector4(0.2f, 0.8f, 0.1f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
-
+            */
             /*
             light = new SpotLight();
             Objects.InitSpotLight(ref light);
@@ -141,8 +148,18 @@ namespace AndroidUI {
             light.color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             light.pos = new Vector3(0.0f, 4.0f, 3.0f);
             light.attenuation = lightAtt;
+            light.specular = 0.0f;
+            light.diffuse = 0.0f;
+            light.ambient = 0.5f;
             scene.appendLight(light);
             */
+
+            light = new Light();
+            Objects.InitPointLight(ref light);
+            light.pos = new Vector3(0.0f, 6.0f, 6.0f);
+            light.color = new Vector4(0.0f, 0.75f, 0.0f, 1.0f);
+            light.attenuation = lightAtt;
+            scene.appendLight(light);
 
             float d = 2.0f;
 
@@ -180,8 +197,9 @@ namespace AndroidUI {
 
             scene.init();
             scene.UpdateProjection(Width, Height);
+            
            
-            Run(30);
+            Run(60);
 		}   
    
         public override bool OnTouchEvent(MotionEvent e)
@@ -192,6 +210,29 @@ namespace AndroidUI {
             if (mScaleDetector.IsInProgress)
             {
                 return true;
+            }
+          
+            if (e.Action == MotionEventActions.Up)
+            {
+                scene.SetShader(shaders[1]);
+                /*
+                bool res = scene.TextureCreateDepth(viewportWidth, viewportHeight);
+                GL.BindFramebuffer(All.Framebuffer, scene.fbo);
+                Render();
+                
+                float id = new float();
+                id = -1.0f;
+
+                GL.ReadPixels((int)(e.GetX()), (int)(viewportHeight - e.GetY() - 1.0f), 1, 1, All.Alpha, All.Float, ref id);
+                GL.BindFramebuffer(All.Framebuffer, 0);
+                
+                scene.SetShader(shaders[0]);
+                Render();
+                */
+
+                Toast.MakeText(Context, e.GetX() + " " + e.GetY() + " Id = " + scene.ReadValue((int)(e.GetX()), (int)(e.GetY()), viewportWidth, viewportHeight), ToastLength.Short).Show();
+
+                scene.SetShader(shaders[0]);
             }
             if (e.Action == MotionEventActions.Down)
             {

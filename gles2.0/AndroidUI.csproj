@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="GLTriangle20Activity.cs" />
     <Compile Include="Scene\Camera.cs" />
-    <Compile Include="Scene\Light.cs" />
     <Compile Include="Scene\Node.cs" />
     <Compile Include="ObjMesh.cs" />
     <Compile Include="ObjMeshLoader.cs" />
@@ -72,10 +71,20 @@
     <AndroidAsset Include="Assets\sphere.mtl" />
     <AndroidAsset Include="Assets\sphere.obj" />
     <AndroidAsset Include="Assets\triad_sphere.obj" />
-    <AndroidAsset Include="Assets\Shaders\Point\fs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\Point\fs.glsl">
+      <SubType>Designer</SubType>
+    </AndroidAsset>
     <AndroidAsset Include="Assets\Shaders\Point\vs.glsl" />
-    <AndroidAsset Include="Assets\Shaders\Spot\fs.glsl" />
+    <AndroidAsset Include="Assets\Shaders\Spot\fs.glsl">
+      <SubType>Designer</SubType>
+    </AndroidAsset>
     <AndroidAsset Include="Assets\Shaders\Spot\vs.glsl">
+      <SubType>Designer</SubType>
+    </AndroidAsset>
+    <AndroidAsset Include="Assets\Shaders\Depth\fs.glsl">
+      <SubType>Designer</SubType>
+    </AndroidAsset>
+    <AndroidAsset Include="Assets\Shaders\Depth\vs.glsl">
       <SubType>Designer</SubType>
     </AndroidAsset>
     <None Include="Properties\AndroidManifest.xml">

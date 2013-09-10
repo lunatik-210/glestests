@@ -18,7 +18,7 @@ namespace AndroidUI.Scene
     class Scene
     {
         private Camera camera = null;
-        private List<SpotLight> lights = null;
+        private List<Light> lights = null;
         private List<Object> objects = null;
 
         private float xangle = 0.0f;
@@ -28,7 +28,7 @@ namespace AndroidUI.Scene
 
         public Scene(Shader shader) 
         {
-            lights = new List<SpotLight>();
+            lights = new List<Light>();
             objects = new List<Object>();
             this.shader = shader;
             globalTransform = new Transformation();
@@ -79,7 +79,7 @@ namespace AndroidUI.Scene
                 GL.UniformMatrix4(u_NormalMatrix_Handle, 1, false,
                     Tools.Matrix4toArray16(Matrix4.Transpose(Matrix4.Invert(obj.Position.transformation * globalTransform.transformation))));
 
-                obj.Mesh.Render(shader);
+                obj.Render(shader);
             }
         }
 
@@ -95,11 +95,112 @@ namespace AndroidUI.Scene
             float far = 100.0f;
 
             Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
+            //Matrix4 projection = OrthoProjection(left, right, bottom, top, near, far);
+            
             int u_ProjectionMatrix_Handle = GL.GetUniformLocation(shader.Program, "uProjection");
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
         }
 
-        public void appendLight( SpotLight light )
+        public void SetShader(Shader shader)
+        {
+            this.shader = shader;
+            init();
+        }
+
+        /*
+        private Matrix4 OrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+        {
+            float tx = - (right + left) / (right - left),
+                    ty = - (top + bottom) / (top - bottom),
+                    tz = - (zFar + zNear) / (zFar - zNear);
+
+            return new Matrix4(2 / (right - left), 0, 0, tx,
+                      0, 2 / (top - bottom), 0, ty,
+                      0, 0, -2 / (zFar - zNear), tz,
+                      0, 0, 0, 1);
+        }
+        */
+        
+        public int ptexture;
+        public int dtexture;
+        public int fbo;
+
+        public bool TextureCreateDepth(int width, int height)
+        {
+            GL.GenFramebuffers(1, ref fbo);
+            GL.BindFramebuffer(All.Framebuffer, fbo);
+
+            GL.GenTextures(1, ref ptexture);
+            GL.BindTexture(All.Texture2D, ptexture);
+            GL.TexImage2D(All.Texture2D, 0, (int)(All.Alpha), width, height, 0, All.Alpha, All.UnsignedByte, IntPtr.Zero);
+            GL.FramebufferTexture2D(All.Framebuffer, All.ColorAttachment0, All.Texture2D, ptexture, 0);
+
+            GL.GenTextures(1, ref dtexture);
+            GL.BindTexture(All.Texture2D, dtexture);
+            GL.TexImage2D(All.Texture2D, 0, (int)(All.DepthComponent), width, height, 0, All.DepthComponent, All.Float, IntPtr.Zero);
+            GL.FramebufferTexture2D(All.Framebuffer, All.DepthAttachment, All.Texture2D, dtexture, 0);
+
+            GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)(All.Linear));
+            GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)(All.Linear));
+
+            GL.TexParameter(All.Texture2D, All.TextureWrapS, (int)(All.ClampToEdge));
+            GL.TexParameter(All.Texture2D, All.TextureWrapT, (int)(All.ClampToEdge));
+
+            All stat = GL.CheckFramebufferStatus(All.Framebuffer);
+
+            if (stat != All.FramebufferComplete)
+            {
+                return false;
+            }
+
+            GL.BindTexture(All.Texture2D, 0);
+            GL.BindFramebuffer(All.Framebuffer, 0);
+
+            return true;
+        }
+
+        public Byte ReadValue(int x, int y, int width, int height)
+        {
+            int colorRenderbuffer = -1;
+            int framebuffer = -1;
+            int depthbuffer = -1;
+
+            GL.GenFramebuffers(1, ref framebuffer);
+            GL.BindFramebuffer(All.Framebuffer, framebuffer);
+            GL.GenRenderbuffers(1, ref colorRenderbuffer);
+            GL.BindRenderbuffer(All.Framebuffer, colorRenderbuffer);
+
+            GL.RenderbufferStorage(All.Framebuffer, All.Rgba8Oes, width, height);
+            GL.FramebufferRenderbuffer(All.Framebuffer,All.ColorAttachment0, All.Renderbuffer, colorRenderbuffer);
+
+            GL.GenRenderbuffers(1, ref depthbuffer);
+            GL.BindRenderbuffer(All.Renderbuffer, depthbuffer);
+
+            GL.RenderbufferStorage(All.Renderbuffer, All.DepthComponent16, width, height);
+            GL.FramebufferRenderbuffer(All.Framebuffer, All.DepthAttachment, All.Renderbuffer, depthbuffer);
+
+            All stat = GL.CheckFramebufferStatus(All.Framebuffer);
+
+            if (stat != All.FramebufferComplete)
+            {
+                return 0;
+            }
+
+            render();
+
+            Byte [] id = new Byte[4];
+
+            GL.ReadPixels(x, height - y - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
+
+            GL.DeleteRenderbuffers(1, ref colorRenderbuffer);
+            GL.DeleteFramebuffers(1, ref framebuffer);
+
+            return id[0];
+        }
+
+        
+
+        public void appendLight( Light light )
         {
             lights.Add(light);
         }
@@ -155,6 +256,9 @@ namespace AndroidUI.Scene
 
                 handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].specular");
                 GL.Uniform1(handle, lights[i].specular);
+
+                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].type");
+                GL.Uniform1(handle, (int)(lights[i].type));
             }
         }
 
