@@ -19,7 +19,6 @@ using Skweez.Filetools;
 using Android.Widget;
 
 namespace AndroidUI {
-
     class PaintingView : AndroidGameView, ScaleGestureDetector.IOnScaleGestureListener
 	{
         private int viewportWidth, viewportHeight;
@@ -46,7 +45,6 @@ namespace AndroidUI {
 
 		void Init ()
 		{
-
 		}
 
 		protected override void CreateFrameBuffer ()
@@ -171,6 +169,7 @@ namespace AndroidUI {
                 {
                     for (int k = -1; k < 2; ++k)
                     {
+                        if (i == 0 && j == 0 && k == 0) continue;
                         Scene.Object obj = new Scene.Object()
                         {
                             Position = new Transformation()
@@ -202,30 +201,30 @@ namespace AndroidUI {
             Run(30);
 		}   
 
-
         private float x = 0, y = 0;
         private bool isTouch = false;
 
         public override bool OnTouchEvent(MotionEvent e)
         {
             base.OnTouchEvent(e);
+
             mScaleDetector.OnTouchEvent(e);
             if (mScaleDetector.IsInProgress)
             {
                 return true;
             }
-            
+          
             if (e.Action == MotionEventActions.Up)
             {
                 x = e.GetX();
                 y = e.GetY();
                 isTouch = true;
             }
-            
             if (e.Action == MotionEventActions.Down)
             {
                 prevx = e.GetX();
                 prevy = e.GetY();
+                scene.onTapEvent(e.GetX(), e.GetY());
             }
             if (e.Action == MotionEventActions.Move)
             {
