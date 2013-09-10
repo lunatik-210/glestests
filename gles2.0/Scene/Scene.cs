@@ -110,7 +110,7 @@ namespace AndroidUI.Scene
             GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
         }
 
-        public void SetShader(Shader shader)
+        public void SetShader( Shader shader)
         {
             this.shader = shader;
             init();
@@ -129,7 +129,7 @@ namespace AndroidUI.Scene
                       0, 0, 0, 1);
         }
         */
-        
+        /*
         public int ptexture;
         public int dtexture;
         public int fbo;
@@ -166,48 +166,8 @@ namespace AndroidUI.Scene
             GL.BindFramebuffer(All.Framebuffer, 0);
 
             return true;
-        }
-
-        public Byte ReadValue(int x, int y, int width, int height)
-        {
-            int colorRenderbuffer = -1;
-            int framebuffer = -1;
-            int depthbuffer = -1;
-
-            GL.GenFramebuffers(1, ref framebuffer);
-            GL.BindFramebuffer(All.Framebuffer, framebuffer);
-            GL.GenRenderbuffers(1, ref colorRenderbuffer);
-            GL.BindRenderbuffer(All.Framebuffer, colorRenderbuffer);
-
-            GL.RenderbufferStorage(All.Framebuffer, All.Rgba8Oes, width, height);
-            GL.FramebufferRenderbuffer(All.Framebuffer,All.ColorAttachment0, All.Renderbuffer, colorRenderbuffer);
-
-            GL.GenRenderbuffers(1, ref depthbuffer);
-            GL.BindRenderbuffer(All.Renderbuffer, depthbuffer);
-
-            GL.RenderbufferStorage(All.Renderbuffer, All.DepthComponent16, width, height);
-            GL.FramebufferRenderbuffer(All.Framebuffer, All.DepthAttachment, All.Renderbuffer, depthbuffer);
-
-            All stat = GL.CheckFramebufferStatus(All.Framebuffer);
-
-            if (stat != All.FramebufferComplete)
-            {
-                return 0;
-            }
-
-            render();
-
-            Byte [] id = new Byte[4];
-
-            GL.ReadPixels(x, height - y - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
-
-            GL.DeleteRenderbuffers(1, ref colorRenderbuffer);
-            GL.DeleteFramebuffers(1, ref framebuffer);
-
-            return id[0];
-        }
-
-        
+        }    
+         * */
 
         public void appendLight( Light light )
         {

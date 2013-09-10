@@ -198,10 +198,13 @@ namespace AndroidUI {
 
             scene.init();
             scene.UpdateProjection(Width, Height);
-            
            
-            Run(60);
+            Run(30);
 		}   
+
+
+        private float x = 0, y = 0;
+        private bool isTouch = false;
 
         public override bool OnTouchEvent(MotionEvent e)
         {
@@ -214,25 +217,9 @@ namespace AndroidUI {
             
             if (e.Action == MotionEventActions.Up)
             {
-                scene.SetShader(shaders[1]);
-                /*
-                bool res = scene.TextureCreateDepth(viewportWidth, viewportHeight);
-                GL.BindFramebuffer(All.Framebuffer, scene.fbo);
-                Render();
-                
-                float id = new float();
-                id = -1.0f;
-
-                GL.ReadPixels((int)(e.GetX()), (int)(viewportHeight - e.GetY() - 1.0f), 1, 1, All.Alpha, All.Float, ref id);
-                GL.BindFramebuffer(All.Framebuffer, 0);
-                
-                scene.SetShader(shaders[0]);
-                Render();
-                */
-
-                Toast.MakeText(Context, e.GetX() + " " + e.GetY() + " Id = " + scene.ReadValue((int)(e.GetX()), (int)(e.GetY()), viewportWidth, viewportHeight), ToastLength.Short).Show();
-
-                scene.SetShader(shaders[0]);
+                x = e.GetX();
+                y = e.GetY();
+                isTouch = true;
             }
             
             if (e.Action == MotionEventActions.Down)
@@ -254,14 +241,74 @@ namespace AndroidUI {
                 Render();
             return true;
         }
+        /*
+        private Byte ReadValue(int x, int y, int width, int height)
+        {
+            int colorRenderbuffer = -1;
+            int framebuffer = -1;
+            int depthbuffer = -1;
 
-		private void Render()
-		{
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
-            GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
+            GL.GenFramebuffers(1, ref framebuffer);
+            GL.BindFramebuffer(All.Framebuffer, framebuffer);
+            GL.GenRenderbuffers(1, ref colorRenderbuffer);
+            GL.BindRenderbuffer(All.Framebuffer, colorRenderbuffer);
+
+            GL.RenderbufferStorage(All.Framebuffer, All.Rgba8Oes, width, height);
+            GL.FramebufferRenderbuffer(All.Framebuffer, All.ColorAttachment0, All.Renderbuffer, colorRenderbuffer);
+
+            GL.GenRenderbuffers(1, ref depthbuffer);
+            GL.BindRenderbuffer(All.Renderbuffer, depthbuffer);
+
+            GL.RenderbufferStorage(All.Renderbuffer, All.DepthComponent16, width, height);
+            GL.FramebufferRenderbuffer(All.Framebuffer, All.DepthAttachment, All.Renderbuffer, depthbuffer);
+
+            All stat = GL.CheckFramebufferStatus(All.Framebuffer);
+
+            if (stat != All.FramebufferComplete)
+            {
+                return 100;
+            }
+            
+            //GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
+            //GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
 
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
 
+            scene.render();
+
+            Byte[] id = new Byte[4];
+
+            GL.ReadPixels(x, height - y - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
+
+            GL.DeleteRenderbuffers(1, ref colorRenderbuffer);
+            GL.DeleteFramebuffers(1, ref framebuffer);
+
+            return id[0];
+        }
+        */
+
+		private void Render()
+		{
+            if (isTouch == true)
+            {
+                GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
+                GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
+                GL.Viewport(0, 0, viewportWidth, viewportHeight);
+
+                scene.SetShader(shaders[1]);
+                scene.render();
+
+                Byte[] id = new Byte[4];
+                GL.ReadPixels((int)(x), viewportHeight - (int)(y) - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
+                Toast.MakeText(Context, x + " " + y + " Id = " + id[0], ToastLength.Short).Show();
+                isTouch = false;
+            }
+
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
+            GL.Viewport(0, 0, viewportWidth, viewportHeight);
+
+            scene.SetShader(shaders[0]);
             scene.render();
 
 			SwapBuffers();

@@ -4,5 +4,5 @@ uniform float uObjectIndex;
 
 void main()
 {
-    gl_FragColor = vec4(uObjectIndex, uObjectIndex, uObjectIndex, uObjectIndex);
+    gl_FragColor = vec4(uObjectIndex, 0.0, 0.0, 1.0);
 }
