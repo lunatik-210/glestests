@@ -24,7 +24,7 @@ namespace AndroidUI {
         private int viewportWidth, viewportHeight;
 
         private Scene.Scene scene;
-        private Shader [] shaders;
+        private Shader spotShader, depthShader;
 
         float prevx;
         float prevy;
@@ -76,19 +76,17 @@ namespace AndroidUI {
 
 			viewportHeight = Height; viewportWidth = Width;
 
-            shaders = new Shader[2];
-
             string vertexShaderCode = null;
             string fragmentShaderCode = null;
 
             try {
                 vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Spot/vs.glsl"));
                 fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Spot/fs.glsl"));
-                shaders[0] = new Shader(vertexShaderCode, fragmentShaderCode);
+                spotShader = new Shader(vertexShaderCode, fragmentShaderCode);
 
                 vertexShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Depth/vs.glsl"));
                 fragmentShaderCode = FileTools.getContentByStream(Context.Assets.Open("Shaders/Depth/fs.glsl"));
-                shaders[1] = new Shader(vertexShaderCode, fragmentShaderCode);
+                depthShader = new Shader(vertexShaderCode, fragmentShaderCode);
             }
             catch(Exception ex) {
                 throw new Exception("Can't load shaders from file: {0}", ex);
@@ -98,7 +96,7 @@ namespace AndroidUI {
 
             ObjMesh sphere = new ObjMesh(Context, "triad_sphere.obj");
 
-            scene = new Scene.Scene(shaders[0]);
+            scene = new Scene.Scene(spotShader);
             scene.Cam = new Scene.Camera(new Vector3(0.0f, 0.0f, 10.0f));
             Vector3 lightAtt = new Vector3(1.0f, 0.00f, 0.02f);
             
@@ -124,35 +122,6 @@ namespace AndroidUI {
             light.color = new Vector4(1.0f, 0.5f, 0.0f, 1.0f);
             light.attenuation = lightAtt;
             scene.appendLight(light);
-            
-            
-            /*
-            light = new SpotLight();
-            Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(0.0f, -1.0f, 1.0f);
-            light.color = new Vector4(0.0f, 0.5f, 0.6f, 1.0f);
-            light.attenuation = lightAtt;
-            scene.appendLight(light);
-
-            light = new SpotLight();
-            Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(-1.0f, -1.0f, 1.0f);
-            light.color = new Vector4(0.2f, 0.8f, 0.1f, 1.0f);
-            light.attenuation = lightAtt;
-            scene.appendLight(light);
-            */
-            /*
-            light = new SpotLight();
-            Objects.InitSpotLight(ref light);
-            light.direction = new Vector3(0.0f, -1.0f, -1.0f);
-            light.color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-            light.pos = new Vector3(0.0f, 4.0f, 3.0f);
-            light.attenuation = lightAtt;
-            light.specular = 0.0f;
-            light.diffuse = 0.0f;
-            light.ambient = 0.5f;
-            scene.appendLight(light);
-            */
 
             light = new Light();
             Objects.InitPointLight(ref light);
@@ -162,6 +131,7 @@ namespace AndroidUI {
             scene.appendLight(light);
 
             float d = 2.0f;
+            int id = 0;
 
             for (int i = -1; i < 2; ++i)
             {
@@ -178,6 +148,7 @@ namespace AndroidUI {
                                 ScaleFactor = 0.8f
                             },
                             Mesh = sphere,
+                            Id = id++,
                         };
                         scene.appendObject(obj);
                     }
@@ -195,14 +166,11 @@ namespace AndroidUI {
                 Render();
             };
 
+            scene.setViewport(Width, Height);
             scene.init();
-            scene.UpdateProjection(Width, Height);
-           
-            Run(30);
-		}   
 
-        private float x = 0, y = 0;
-        private bool isTouch = false;
+            Run(30);
+		}
 
         public override bool OnTouchEvent(MotionEvent e)
         {
@@ -216,15 +184,15 @@ namespace AndroidUI {
           
             if (e.Action == MotionEventActions.Up)
             {
-                x = e.GetX();
-                y = e.GetY();
-                isTouch = true;
+                if ( Math.Abs( e.DownTime - e.EventTime ) < 120)
+                {
+                    Toast.MakeText(Context, "You've triggered ball with id = " + GetTappedObjectID((int)(e.GetX()), (int)(e.GetY())), ToastLength.Short).Show();
+                }
             }
             if (e.Action == MotionEventActions.Down)
             {
                 prevx = e.GetX();
                 prevy = e.GetY();
-                scene.onTapEvent(e.GetX(), e.GetY());
             }
             if (e.Action == MotionEventActions.Move)
             {
@@ -240,74 +208,30 @@ namespace AndroidUI {
                 Render();
             return true;
         }
-        /*
-        private Byte ReadValue(int x, int y, int width, int height)
+
+        byte GetTappedObjectID(int x, int y)
         {
-            int colorRenderbuffer = -1;
-            int framebuffer = -1;
-            int depthbuffer = -1;
-
-            GL.GenFramebuffers(1, ref framebuffer);
-            GL.BindFramebuffer(All.Framebuffer, framebuffer);
-            GL.GenRenderbuffers(1, ref colorRenderbuffer);
-            GL.BindRenderbuffer(All.Framebuffer, colorRenderbuffer);
-
-            GL.RenderbufferStorage(All.Framebuffer, All.Rgba8Oes, width, height);
-            GL.FramebufferRenderbuffer(All.Framebuffer, All.ColorAttachment0, All.Renderbuffer, colorRenderbuffer);
-
-            GL.GenRenderbuffers(1, ref depthbuffer);
-            GL.BindRenderbuffer(All.Renderbuffer, depthbuffer);
-
-            GL.RenderbufferStorage(All.Renderbuffer, All.DepthComponent16, width, height);
-            GL.FramebufferRenderbuffer(All.Framebuffer, All.DepthAttachment, All.Renderbuffer, depthbuffer);
-
-            All stat = GL.CheckFramebufferStatus(All.Framebuffer);
-
-            if (stat != All.FramebufferComplete)
-            {
-                return 100;
-            }
-            
-            //GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
-            //GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
-
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
+            GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
+
+            scene.SetShader(depthShader);
 
             scene.render();
 
             Byte[] id = new Byte[4];
+            GL.ReadPixels((int)(x), viewportHeight - (int)(y) - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
 
-            GL.ReadPixels(x, height - y - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
-
-            GL.DeleteRenderbuffers(1, ref colorRenderbuffer);
-            GL.DeleteFramebuffers(1, ref framebuffer);
-
+            scene.SetShader(spotShader);
             return id[0];
         }
-        */
 
 		private void Render()
 		{
-            if (isTouch == true)
-            {
-                GL.ClearColor(0.0f, 0.0f, 0.0f, 1);
-                GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
-                GL.Viewport(0, 0, viewportWidth, viewportHeight);
-
-                scene.SetShader(shaders[1]);
-                scene.render();
-
-                Byte[] id = new Byte[4];
-                GL.ReadPixels((int)(x), viewportHeight - (int)(y) - 1, 1, 1, All.Rgba, All.UnsignedByte, id);
-                Toast.MakeText(Context, x + " " + y + " Id = " + id[0], ToastLength.Short).Show();
-                isTouch = false;
-            }
-
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL.Clear((int)(All.ColorBufferBit | All.DepthBufferBit));
             GL.Viewport(0, 0, viewportWidth, viewportHeight);
 
-            scene.SetShader(shaders[0]);
             scene.render();
 
 			SwapBuffers();
@@ -318,7 +242,7 @@ namespace AndroidUI {
 			viewportHeight = Height;
 			viewportWidth = Width;
 
-            scene.UpdateProjection(Width, Height);
+            scene.setViewport(Width, Height);
 
 			MakeCurrent();
 			Render();

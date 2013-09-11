@@ -26,12 +26,15 @@ namespace AndroidUI.Scene
         private Shader shader = null;
         private Transformation globalTransform;
 
+        public int viewportWidth;
+        public int viewportHeight;
+
         public Scene(Shader shader) 
         {
             lights = new List<Light>();
             objects = new List<Object>();
-            this.shader = shader;
             globalTransform = new Transformation();
+            this.shader = shader;
         }
 
         public void init()
@@ -45,7 +48,9 @@ namespace AndroidUI.Scene
 
             ScaleCamera(1.0f);
 
-            InitLights(shader);
+            InitLights();
+
+            UpdateProjection();
         }
 
         public void ScaleCamera(float scale)
@@ -83,82 +88,11 @@ namespace AndroidUI.Scene
             }
         }
 
-        public void UpdateProjection(float width, float height)
-        {
-            float ratio = width / height;
-            float k = 0.065f;
-            float left = -k * ratio;
-            float right = k * ratio;
-            float bottom = -k;
-            float top = k;
-            float near = 0.1f;
-            float far = 100.0f;
-
-            Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
-            //Matrix4 projection = OrthoProjection(left, right, bottom, top, near, far);
-            
-            int u_ProjectionMatrix_Handle = GL.GetUniformLocation(shader.Program, "uProjection");
-            GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
-        }
-
-        public void SetShader( Shader shader)
+        public void SetShader(Shader shader)
         {
             this.shader = shader;
             init();
         }
-
-        /*
-        private Matrix4 OrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
-        {
-            float tx = - (right + left) / (right - left),
-                    ty = - (top + bottom) / (top - bottom),
-                    tz = - (zFar + zNear) / (zFar - zNear);
-
-            return new Matrix4(2 / (right - left), 0, 0, tx,
-                      0, 2 / (top - bottom), 0, ty,
-                      0, 0, -2 / (zFar - zNear), tz,
-                      0, 0, 0, 1);
-        }
-        */
-        /*
-        public int ptexture;
-        public int dtexture;
-        public int fbo;
-
-        public bool TextureCreateDepth(int width, int height)
-        {
-            GL.GenFramebuffers(1, ref fbo);
-            GL.BindFramebuffer(All.Framebuffer, fbo);
-
-            GL.GenTextures(1, ref ptexture);
-            GL.BindTexture(All.Texture2D, ptexture);
-            GL.TexImage2D(All.Texture2D, 0, (int)(All.Alpha), width, height, 0, All.Alpha, All.UnsignedByte, IntPtr.Zero);
-            GL.FramebufferTexture2D(All.Framebuffer, All.ColorAttachment0, All.Texture2D, ptexture, 0);
-
-            GL.GenTextures(1, ref dtexture);
-            GL.BindTexture(All.Texture2D, dtexture);
-            GL.TexImage2D(All.Texture2D, 0, (int)(All.DepthComponent), width, height, 0, All.DepthComponent, All.Float, IntPtr.Zero);
-            GL.FramebufferTexture2D(All.Framebuffer, All.DepthAttachment, All.Texture2D, dtexture, 0);
-
-            GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)(All.Linear));
-            GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)(All.Linear));
-
-            GL.TexParameter(All.Texture2D, All.TextureWrapS, (int)(All.ClampToEdge));
-            GL.TexParameter(All.Texture2D, All.TextureWrapT, (int)(All.ClampToEdge));
-
-            All stat = GL.CheckFramebufferStatus(All.Framebuffer);
-
-            if (stat != All.FramebufferComplete)
-            {
-                return false;
-            }
-
-            GL.BindTexture(All.Texture2D, 0);
-            GL.BindFramebuffer(All.Framebuffer, 0);
-
-            return true;
-        }    
-         * */
 
         public void appendLight( Light light )
         {
@@ -170,18 +104,38 @@ namespace AndroidUI.Scene
             objects.Add(obj);
         }
 
+        public void setViewport(int width, int height)
+        {
+            viewportWidth = width;
+            viewportHeight = height;
+            UpdateProjection();
+        }
+
         public Camera Cam
         {
             set { camera = value; }
             get { return camera; }
         }
 
-        public void onTapEvent(float x, float y)
+        private void UpdateProjection()
         {
-          
+            float ratio = (float)(viewportWidth) / (float)(viewportHeight);
+            float k = 0.065f;
+            float left = -k * ratio;
+            float right = k * ratio;
+            float bottom = -k;
+            float top = k;
+            float near = 0.1f;
+            float far = 100.0f;
+
+            Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
+            //Matrix4 projection = OrthoProjection(left, right, bottom, top, near, far);
+
+            int u_ProjectionMatrix_Handle = GL.GetUniformLocation(shader.Program, "uProjection");
+            GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
         }
 
-        private void InitLights(Shader shader)
+        private void InitLights()
         {
             int handle = -1;
             
