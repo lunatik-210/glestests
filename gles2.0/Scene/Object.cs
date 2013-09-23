@@ -49,7 +49,7 @@ namespace AndroidUI.Scene
 
         public void Render(Shader shader)
         {
-            GL.Uniform1(GL.GetUniformLocation(shader.Program, "uObjectIndex"), (float)(id)/255.0f);
+            shader.SetUniform("uObjectIndex", (float)(id) / 255.0f);
             Mesh.Render(shader);
         }
     }

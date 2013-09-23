@@ -44,7 +44,7 @@ namespace AndroidUI.Scene
             GL.CullFace(All.Back);
             GL.Hint(All.GenerateMipmapHint, All.Nicest);
 
-            shader.Use();
+            shader.Bind();
 
             ScaleCamera(1.0f);
 
@@ -55,7 +55,7 @@ namespace AndroidUI.Scene
 
         public void ScaleCamera(float scale)
         {
-            shader.Use();
+            shader.Bind();
 
             camera.Pos = new Vector3(camera.Pos.X, camera.Pos.Y, camera.Pos.Z * scale);
 
@@ -71,18 +71,15 @@ namespace AndroidUI.Scene
 
         public void render()
         {
-            shader.Use();
+            shader.Bind();
 
             int u_ModelMatrix_Handle = GL.GetUniformLocation(shader.Program, "uModel");
             int u_NormalMatrix_Handle = GL.GetUniformLocation(shader.Program, "uNormal");
 
             foreach (Object obj in objects)
             {
-                GL.UniformMatrix4(u_ModelMatrix_Handle, 1, false,
-                    Tools.Matrix4toArray16(obj.Position.transformation * globalTransform.transformation));
-
-                GL.UniformMatrix4(u_NormalMatrix_Handle, 1, false,
-                    Tools.Matrix4toArray16(Matrix4.Transpose(Matrix4.Invert(obj.Position.transformation * globalTransform.transformation))));
+                shader.SetUniform(u_ModelMatrix_Handle, obj.Position.transformation * globalTransform.transformation);
+                shader.SetUniform(u_NormalMatrix_Handle, Matrix4.Transpose(Matrix4.Invert(obj.Position.transformation * globalTransform.transformation)));
 
                 obj.Render(shader);
             }
@@ -131,58 +128,32 @@ namespace AndroidUI.Scene
             Matrix4 projection = Matrix4.CreatePerspectiveOffCenter(left, right, bottom, top, near, far);
             //Matrix4 projection = OrthoProjection(left, right, bottom, top, near, far);
 
-            int u_ProjectionMatrix_Handle = GL.GetUniformLocation(shader.Program, "uProjection");
-            GL.UniformMatrix4(u_ProjectionMatrix_Handle, 1, false, Tools.Matrix4toArray16(projection));
+            shader.SetUniform("uProjection", projection);
         }
 
         private void InitLights()
         {
-            int handle = -1;
-            
-            handle = GL.GetUniformLocation(shader.Program, "numLights");
-            GL.Uniform1(handle, lights.Count);
+            shader.SetUniform("numLights", lights.Count);
 
             for (int i = 0; i < lights.Count; i++)
             {
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].color");
-                GL.Uniform4(handle, lights[i].color.X, lights[i].color.Y, lights[i].color.Z, lights[i].color.W);
-                
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].position");
-                GL.Uniform3(handle, lights[i].pos.X, lights[i].pos.Y, lights[i].pos.Z);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].attenuation");
-                GL.Uniform3(handle, lights[i].attenuation.X, lights[i].attenuation.Y, lights[i].attenuation.Z);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].direction");
-                GL.Uniform3(handle, lights[i].direction.X, lights[i].direction.Y, lights[i].direction.Z);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].exponent");
-                GL.Uniform1(handle, lights[i].exp);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].cosCutoff");
-                GL.Uniform1(handle, lights[i].cosCutOff);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].ambient");
-                GL.Uniform1(handle, lights[i].ambient);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].diffuse");
-                GL.Uniform1(handle, lights[i].diffuse);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].specular");
-                GL.Uniform1(handle, lights[i].specular);
-
-                handle = GL.GetUniformLocation(shader.Program, "u_lights[" + i + "].type");
-                GL.Uniform1(handle, (int)(lights[i].type));
+                shader.SetUniform("u_lights[" + i + "].color", lights[i].color);
+                shader.SetUniform("u_lights[" + i + "].position", lights[i].pos);
+                shader.SetUniform("u_lights[" + i + "].attenuation", lights[i].attenuation);
+                shader.SetUniform("u_lights[" + i + "].direction", lights[i].direction);
+                shader.SetUniform("u_lights[" + i + "].exponent", lights[i].exp);
+                shader.SetUniform("u_lights[" + i + "].cosCutoff", lights[i].cosCutOff);
+                shader.SetUniform("u_lights[" + i + "].ambient", lights[i].ambient);
+                shader.SetUniform("u_lights[" + i + "].diffuse", lights[i].diffuse);
+                shader.SetUniform("u_lights[" + i + "].specular", lights[i].specular);
+                shader.SetUniform("u_lights[" + i + "].type", (int)(lights[i].type));
             }
         }
 
         private void UpdateCamera()
         {
-            int handle = GL.GetUniformLocation(shader.Program, "uView");
-            GL.UniformMatrix4(handle, 1, false, Tools.Matrix4toArray16(camera.View));
-
-            handle = GL.GetUniformLocation(shader.Program, "u_camera");
-            GL.Uniform3(handle, camera.Pos.X, camera.Pos.Y, camera.Pos.Z);
+            shader.SetUniform("uView", camera.View);
+            shader.SetUniform("u_camera", camera.Pos);
         }
     }
 }
